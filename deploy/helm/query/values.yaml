@@ -1,0 +1,55 @@
+app:
+  defaultGreetingMessage: Earth
+
+deployment:
+
+# replicaCount: 1              # set the deployment spec.replicas
+
+  image:
+    tag: "0.1.0"
+#   pullPolicy: IfNotPresent   # set the deployment container pullPolicy
+
+  resources:                   # enable to set deployment container resources
+    limits:
+      cpu: "1"
+      memory: 512Mi
+    requests:
+      cpu: "1"
+      memory: 256Mi
+
+  readinessProbe:
+    enabled: true              # enable the readinessProbe
+#   initialDelaySeconds: 10
+#   periodSeconds: 5
+#   timeoutSeconds: 1
+#   successThreshold: 1
+#   failureThreshold: 1
+  livenessProbe:
+    enabled: true              # enable the livenessProbe
+#   initialDelaySeconds: 10
+#   periodSeconds: 5
+#   timeoutSeconds: 1
+#   successThreshold: 1
+#   failureThreshold: 1
+  startupProbe:
+    enabled: true              # enable the startupProbe
+#   initialDelaySeconds: 10
+#   periodSeconds: 5
+#   timeoutSeconds: 1
+#   successThreshold: 1
+#   failureThreshold: 10
+
+  securityContext:
+     enabled: true            # enable securityContext
+#    runAsUser: 10000
+#    runAsGroup: 10000
+#    fsGroup: 10000
+#    fsGroupChangePolicy: "OnRootMismatch"
+#    allowPrivilegeEscalation: false
+#    privileged: false
+#    readOnlyRootFilesystem: true
+#    runAsNonRoot: true
+
+#podDisruptionBudget:   # default - not specified
+#  maxUnavailable: 1    # mutual exclusive
+#  minAvailable: 1      # mutual exclusive

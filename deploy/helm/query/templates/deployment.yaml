@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  labels:
+    {{- include "chart-labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+      {{- include "chart-labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}-{{ .Chart.Name }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "image-name" . }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy | default "IfNotPresent" }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: spring.cloud.kubernetes.enabled
+              value: "true"
+            - name: spring.cloud.bootstrap.enabled
+              value: "true"
+{{- if .Values.deployment.securityContext.enabled }}
+          securityContext:
+             runAsUser:  {{ (.Values.deployment.securityContext.runAsUser) | default 10000 }}
+             runAsGroup:  {{ (.Values.deployment.securityContext.runAsGroup) | default 10000 }}
+             fsGroup:  {{ (.Values.deployment.securityContext.fsGroup) | default 10000 }}
+             fsGroupChangePolicy:  {{ (.Values.deployment.securityContext.fsGroupChangePolicy) | default "OnRootMismatch" }}
+             allowPrivilegeEscalation:  {{ (.Values.deployment.securityContext.allowPrivilegeEscalation) | default false }}
+             privileged:  {{ (.Values.deployment.securityContext.privileged) | default false }}
+             readOnlyRootFilesystem:  {{ (.Values.deployment.securityContext.readOnlyRootFilesystem) | default true }}
+             runAsNonRoot:  {{ (.Values.deployment.securityContext.runAsNonRoot) | default true }}
+{{- end }}
+{{- if .Values.deployment.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: {{ (.Values.deployment.readinessProbe.initialDelaySeconds) | default 10 }}
+            periodSeconds: {{ (.Values.deployment.readinessProbe.periodSeconds) | default 5 }}
+            timeoutSeconds: {{ (.Values.deployment.readinessProbe.timeoutSeconds) | default 1 }}
+            successThreshold: {{ (.Values.deployment.readinessProbe.successThreshold) | default 1 }}
+            failureThreshold: {{ (.Values.deployment.readinessProbe.failureThreshold) | default 1 }}
+{{- end }}
+{{- if .Values.deployment.livenessProbe.enabled  }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: {{ (.Values.deployment.livenessProbe.initialDelaySeconds) | default 10 }}
+            periodSeconds: {{ (.Values.deployment.livenessProbe.periodSeconds) | default 5 }}
+            timeoutSeconds: {{ (.Values.deployment.livenessProbe.timeoutSeconds) | default 1 }}
+            successThreshold: {{ (.Values.deployment.livenessProbe.successThreshold) | default 1 }}
+            failureThreshold: {{ (.Values.deployment.livenessProbe.failureThreshold) | default 1 }}
+{{- end }}
+{{- if .Values.deployment.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: {{ (.Values.deployment.startupProbe.initialDelaySeconds) | default 10 }}
+            periodSeconds: {{ (.Values.deployment.startupProbe.periodSeconds) | default 5 }}
+            timeoutSeconds: {{ (.Values.deployment.startupProbe.timeoutSeconds) | default 1 }}
+            successThreshold: {{ (.Values.deployment.startupProbe.successThreshold) | default 1 }}
+            failureThreshold: {{ (.Values.deployment.startupProbe.failureThreshold) | default 1 }}
+{{- end }}
+
+{{- if .Values.deployment.resources  }}
+          resources:
+{{ .Values.deployment.resources | toYaml | indent 12 }}
+{{- end }}

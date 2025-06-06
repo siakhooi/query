@@ -1,0 +1,44 @@
+suite: PodDisruptionBudget
+templates:
+  - PodDisruptionBudget.yaml
+release:
+  name: my-release
+tests:
+  - it: default
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: maxUnavailable
+    set:
+      podDisruptionBudget:
+        maxUnavailable: 1
+    asserts:
+      - containsDocument:
+          kind: PodDisruptionBudget
+          apiVersion: policy/v1
+      - equal:
+          path: metadata.name
+          value: my-release-query
+      - equal:
+          path: spec.selector.matchLabels.app
+          value: query
+      - equal:
+          path: spec.maxUnavailable
+          value: 1
+  - it: minAvailable
+    set:
+      podDisruptionBudget:
+        minAvailable: 1
+    asserts:
+      - containsDocument:
+          kind: PodDisruptionBudget
+          apiVersion: policy/v1
+      - equal:
+          path: metadata.name
+          value: my-release-query
+      - equal:
+          path: spec.selector.matchLabels.app
+          value: query
+      - equal:
+          path: spec.minAvailable
+          value: 1

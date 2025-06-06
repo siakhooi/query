@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: query
+  cloud:
+    kubernetes:
+      reload:
+        enabled: true
+        mode: polling
+      config:
+        sources:
+          - name: ${spring.application.name}
+      enabled: false
+
+management:
+  endpoints:
+    shutdown:
+      enabled: true
+    web:
+      exposure:
+        include: "*"

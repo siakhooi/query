@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "chart-labels" . | nindent 4 }}
+data:
+  application.properties: |-
+{{- if (.Values.app).defaultGreetingMessage }}
+    app.defaultGreetingMessage={{ .Values.app.defaultGreetingMessage }}
+{{- end }}

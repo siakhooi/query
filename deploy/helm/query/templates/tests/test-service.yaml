@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-helm-test-service
+  labels:
+    {{- include "chart-labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command:
+         - wget
+         - 'http://{{ .Release.Name }}-{{ .Chart.Name }}:80/actuator/health'
+  restartPolicy: Never

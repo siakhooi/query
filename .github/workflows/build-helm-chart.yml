@@ -1,0 +1,27 @@
+name: Build helm chart
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build-helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: cat release.env >> $GITHUB_ENV
+      - run: helm lint deploy/helm/${{ env.HELM_CHART_NAME }}/
+      - run: helm template ${{ env.HELM_CHART_NAME }}-release-1 deploy/helm/${{ env.HELM_CHART_NAME }}/
+      - run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
+      - run: bin/helm-unit-test.sh
+      - run: helm package deploy/helm/${{ env.HELM_CHART_NAME }}/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: helm-chart
+          path: ${{ env.HELM_CHART_NAME }}-${{ env.HELM_CHART_VERSION }}.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: helm-unit-test.xml
+          path: helm-unit-test.xml
