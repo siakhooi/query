@@ -22,6 +22,13 @@ run:
 gh-rerun:
 	gh run rerun --failed
 
+curl:
+	curl http://localhost:8080/greeting
+curl-env:
+	curl -s http://localhost:8080/actuator/env | jq -r '.propertySources[].properties."app.defaultGreetingMessage".value|select\(.!=null\)'
+curl-configprops:
+	curl -s http://localhost:8080/actuator/configprops|jq '.contexts.application.beans.greetingConfig'
+
 # run-moon:
 # 	java -jar -Dapp.defaultGreetingMessage=Moon target/query-0.6.0.jar
 # run-jupiter:
@@ -39,8 +46,6 @@ gh-rerun:
 # 	docker inspect siakhooi/query:latest
 # docker-get-base-digest:
 # 	docker inspect eclipse-temurin:21.0.2_13-jre-alpine | jq -r '.[].Id'
-# # curl:
-# 	curl http://localhost:8080/greeting
 # curl-earth:
 # 	curl http://localhost:8080/greeting?name=Earth
 # curl-actuator:

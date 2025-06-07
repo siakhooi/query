@@ -10,11 +10,3 @@ spring:
         sources:
           - name: ${spring.application.name}
       enabled: false
-
-management:
-  endpoints:
-    shutdown:
-      enabled: true
-    web:
-      exposure:
-        include: "*"
