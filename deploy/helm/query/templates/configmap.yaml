@@ -5,7 +5,8 @@ metadata:
   labels:
     {{- include "chart-labels" . | nindent 4 }}
 data:
-  application.properties: |-
+  application.yaml: |-
 {{- if (.Values.app).defaultGreetingMessage }}
-    app.defaultGreetingMessage={{ .Values.app.defaultGreetingMessage }}
+    app:
+      defaultGreetingMessage: {{ .Values.app.defaultGreetingMessage }}
 {{- end }}

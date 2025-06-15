@@ -1,5 +1,5 @@
 help:
-verify-all: clean setversion build docker-build helm-build
+all: clean setversion build docker-build helm-build
 
 clean:
 	mvn clean
@@ -25,7 +25,8 @@ gh-rerun:
 curl:
 	curl http://localhost:8080/greeting
 curl-env:
-	curl -s http://localhost:8080/actuator/env | jq -r '.propertySources[].properties."app.defaultGreetingMessage".value|select\(.!=null\)'
+	curl -s http://localhost:8080/actuator/env | jq> env.json
+#	curl -s http://localhost:8080/actuator/env | jq -r '.propertySources[].properties."app.defaultGreetingMessage".value|select\(.!=null\)'
 curl-configprops:
 	curl -s http://localhost:8080/actuator/configprops|jq '.contexts.application.beans.greetingConfig'
 

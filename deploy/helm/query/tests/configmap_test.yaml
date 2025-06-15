@@ -16,12 +16,12 @@ tests:
   - it: default
     asserts:
       - matchRegex:
-          path: data['application.properties']
-          pattern: app.defaultGreetingMessage=Earth
+          path: data['application.yaml']
+          pattern: "defaultGreetingMessage: Earth"
   - it: custom defaultGreetingMessage value
     set:
       app.defaultGreetingMessage: Moon
     asserts:
       - matchRegex:
-          path: data['application.properties']
-          pattern: app.defaultGreetingMessage=Moon
+          path: data['application.yaml']
+          pattern: "defaultGreetingMessage: Moon"

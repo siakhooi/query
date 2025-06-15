@@ -1,0 +1,24 @@
+app:
+  defaultGreetingMessage: World
+
+management:
+  endpoints:
+    shutdown:
+      enabled: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: always
+    configprops:
+      show-values: always
+
+logging: 
+  level:
+    "org.springframework.cloud.kubernetes": DEBUG
+    "org.springframework.web": DEBUG
+
+spring:
+  config:
+    import: datasource.yaml
