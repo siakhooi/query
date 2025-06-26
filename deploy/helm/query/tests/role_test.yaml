@@ -16,5 +16,5 @@ tests:
           path: rules[0]
           value:
               apiGroups: [""]
-              resources: ["pods", "configmaps"]
+              resources: ["pods", "configmaps", "secrets"]
               verbs: ["get", "watch", "list"]

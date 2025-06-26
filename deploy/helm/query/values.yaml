@@ -53,3 +53,9 @@ deployment:
 #podDisruptionBudget:   # default - not specified
 #  maxUnavailable: 1    # mutual exclusive
 #  minAvailable: 1      # mutual exclusive
+
+default_datasource_yaml:
+  datasource:
+    connections:
+      - name: "in-memory"
+        url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"

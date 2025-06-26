@@ -24,21 +24,24 @@ gh-rerun:
 
 curl:
 	curl http://localhost:8080/greeting
+#	wget -q -O- http://query-query/greeting
 curl-env:
-	curl -s http://localhost:8080/actuator/env | jq> env.json
-#	curl -s http://localhost:8080/actuator/env | jq -r '.propertySources[].properties."app.defaultGreetingMessage".value|select\(.!=null\)'
+	curl -s http://localhost:8080/actuator/env | jq | tee env.json
+#	wget -q -O- http://query-query/actuator/env
 curl-configprops:
 	curl -s http://localhost:8080/actuator/configprops|jq '.contexts.application.beans.greetingConfig'
+
+secrets:
+#	datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1GQUxTRQ==
+#   datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1UUlVF
 
 # run-moon:
 # 	java -jar -Dapp.defaultGreetingMessage=Moon target/query-0.6.0.jar
 # run-jupiter:
 # 	app_defaultGreetingMessage=Jupiter java -jar target/query-0.6.0.jar
 
-# delete-release:
-# 	gh release delete --cleanup-tag 0.25.0
-# docker-run:
-# 	docker run --rm -p 8080:8080 siakhooi/query:latest
+docker-run:
+	docker run --rm -p 8080:8080 siakhooi/query:latest
 # docker-run-uranus:
 # 	docker run --rm -p 8080:8080 -e app_defaultGreetingMessage=Uranus siakhooi/query:latest
 # docker-run-base:
@@ -90,5 +93,5 @@ helm-build: helm-lint helm-template helm-unittest helm-package
 # k-edit-cm:
 # 	shed-kubectl edit cm/query
 
-# zootopia-load-image:
-# 	zootopia-load-docker-images siakhooi/query:0.18.0
+zootopia-load-image:
+ 	zootopia-load-docker-images siakhooi/query:latest

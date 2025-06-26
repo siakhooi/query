@@ -6,5 +6,5 @@ metadata:
     {{- include "chart-labels" . | nindent 4 }}
 rules:
 - apiGroups: [""]
-  resources: ["pods", "configmaps"]
+  resources: ["pods", "configmaps", "secrets"]
   verbs: ["get", "watch", "list"]
