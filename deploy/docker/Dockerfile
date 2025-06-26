@@ -10,11 +10,11 @@ LABEL org.opencontainers.image.description="Query"
 LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.base.name=eclipse-temurin:21.0.2_13-jre-alpine
 LABEL org.opencontainers.image.base.digest=sha256:d3e9b76faa33518bedb6f8dbe979c6fdf80892da33eb571957e650cb3d67a93e
-LABEL org.opencontainers.image.version=0.3.0
-LABEL org.opencontainers.image.revision=0.4.0
-LABEL org.opencontainers.image.created="2025-06-26 11:57:13.713923238+00:00"
+LABEL org.opencontainers.image.version=0.4.0
+LABEL org.opencontainers.image.revision=0.5.0
+LABEL org.opencontainers.image.created="2025-06-26 12:09:31.750300720+00:00"
 
-ARG APP_VERSION=0.3.0
+ARG APP_VERSION=0.4.0
 ARG JAR_NAME=query
 
 EXPOSE 8080
