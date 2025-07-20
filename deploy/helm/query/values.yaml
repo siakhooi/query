@@ -6,7 +6,7 @@ deployment:
 # replicaCount: 1              # set the deployment spec.replicas
 
   image:
-    tag: "0.4.0"
+    tag: "0.5.0"
 #   pullPolicy: IfNotPresent   # set the deployment container pullPolicy
 
   resources:                   # enable to set deployment container resources
@@ -59,3 +59,11 @@ default_datasource_yaml:
     connections:
       - name: "in-memory"
         url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+default_query_yaml:
+  query:
+    querysets:
+      - name: user
+        queries:
+          - name: user
+            connection: in-memory
+            queryString: select user from user

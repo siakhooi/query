@@ -2,20 +2,29 @@ spring:
   application:
     name: query
   cloud:
+    bootstrap:
+      enabled: false
     kubernetes:
-      reload:
-        enabled: true
-        mode: polling
-        monitoring-config-maps: true
-        monitoring-secrets: true
+      enabled: false
       config:
-        enabled: true
-        enable-api: true
+        reload:
+          enabled: true
+          mode: refresh
+          strategy: polling
+          polling-interval: 10s
+        enableApi: true
         sources:
           - name: ${spring.application.name}
+          - name: ${spring.application.name}-query
       secrets:
-        enabled: true
-        enable-api: true
+        reload:
+          enabled: true
+          mode: refresh
+          strategy: polling
+          polling-interval: 10s
+        enableApi: true
         sources:
           - name: ${spring.application.name}-datasource
-      enabled: false
+      reload:
+        enabled: true
+        monitoring-secrets: true

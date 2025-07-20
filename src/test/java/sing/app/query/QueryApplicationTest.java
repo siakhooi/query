@@ -13,7 +13,7 @@ class QueryApplicationTest {
 	private QueryController controller;
 
 	@Test
-	void contextLoads() throws Exception {
+	void contextLoads() {
 		assertThat(controller).isNotNull();
 	}
 

@@ -14,11 +14,13 @@ management:
     configprops:
       show-values: always
 
-logging: 
+logging:
   level:
     "org.springframework.cloud.kubernetes": DEBUG
     "org.springframework.web": DEBUG
 
 spring:
   config:
-    import: datasource.yaml
+    import:
+      - datasource.yaml
+      - query.yaml

@@ -1,0 +1,20 @@
+suite: configmap_query
+templates:
+  - configmap_query.yaml
+tests:
+  - it: meta data
+    asserts:
+      - containsDocument:
+          kind: ConfigMap
+          apiVersion: v1
+      - equal:
+          path: metadata.name
+          value: query-query
+      - matchRegex:
+          path: metadata.labels['app.kubernetes.io/name']
+          pattern: query
+  - it: default
+    asserts:
+      - matchRegex:
+          path: data['query.yaml']
+          pattern: "querysets"

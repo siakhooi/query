@@ -1,0 +1,7 @@
+query:
+  querysets:
+    - name: user
+      queries:
+        - name: user
+          connection: in-memory
+          queryString: select user from user
