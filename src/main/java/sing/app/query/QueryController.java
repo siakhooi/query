@@ -18,9 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 public class QueryController {
 
     private GreetingConfig config;
+    private QueryConfig queryConfig;
+    private DatasourceConfig datasourceConfig;
 
-    public QueryController(GreetingConfig config) {
+    public QueryController(GreetingConfig config, QueryConfig queryConfig, DatasourceConfig datasourceConfig) {
         this.config = config;
+        this.queryConfig = queryConfig;
+        this.datasourceConfig = datasourceConfig;
     }
 
     private static final String GREETING_TEMPLATE = "Hello, %s!";
@@ -39,4 +43,41 @@ public class QueryController {
 
         return new Greeting(counter.incrementAndGet(), String.format(GREETING_TEMPLATE, displayName));
     }
+
+    @GetMapping("/config/query")
+    @Operation(summary = Util.API_QUERY_SUMMARY, description = Util.API_QUERY_DESCRIPTION)
+    @ApiResponse(responseCode = "200", description = "Success", content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE) })
+    public QueryConfig getQueryConfig() {
+        QueryConfig qc = new QueryConfig();
+        for (var qs : queryConfig.getQuerysets()) {
+            QueryConfig.Queryset qset = new QueryConfig.Queryset();
+            qset.setName(qs.getName());
+            for (var q : qs.getQueries()) {
+                QueryConfig.Query query = new QueryConfig.Query();
+                query.setName(q.getName());
+                query.setConnection(q.getConnection());
+                qset.getQueries().add(query);
+            }
+            qc.getQuerysets().add(qset);
+        }
+
+        return qc;
+    }
+
+    @GetMapping("/config/datasource")
+    @Operation(summary = Util.API_DATASOURCE_SUMMARY, description = Util.API_DATASOURCE_DESCRIPTION)
+    @ApiResponse(responseCode = "200", description = "Success", content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE) })
+    public DatasourceConfig getDatasourceConfig() {
+        DatasourceConfig dc = new DatasourceConfig();
+        for (var c : datasourceConfig.getConnections()) {
+            DatasourceConfig.Connection connection = new DatasourceConfig.Connection();
+            connection.setName(c.getName());
+            connection.setUsername(c.getUsername());
+            dc.getConnections().add(connection);
+        }
+        return dc;
+    }
+
 }

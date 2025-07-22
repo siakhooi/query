@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -33,6 +34,29 @@ class ControllerMvcTest {
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Hello, Earth!")));
+	}
+	@Test
+	void shouldReturnConfiguQuery() throws Exception {
+		this.mockMvc
+				.perform(get("/config/query"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("name")))
+				.andExpect(content().string(containsString("queries")))
+				.andExpect(content().string(not(containsString("queryString"))))
+				.andExpect(content().string(containsString("connection")));
+	}
+	@Test
+	void shouldReturnConfiguDatasource() throws Exception {
+		this.mockMvc
+				.perform(get("/config/datasource"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().string(not(containsString("url"))))
+				.andExpect(content().string(not(containsString("password"))))
+				.andExpect(content().string(containsString("name")))
+				.andExpect(content().string(containsString("username")))
+				.andExpect(content().string(containsString("connections")));
 	}
 
 }

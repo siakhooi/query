@@ -55,6 +55,12 @@ curl-configprops:
 curl-refresh:
 	curl -X POST http://localhost:8080/actuator/refresh
 
+curl-config-query:
+	curl --no-progress-meter http://localhost:8080/config/query |jq
+
+curl-config-datasource:
+	curl --no-progress-meter http://localhost:8080/config/datasource |jq
+
 secrets:
 #	datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1GQUxTRQ==
 #   datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1UUlVF
