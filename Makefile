@@ -38,9 +38,6 @@ test:
 run:
 	mvn spring-boot:run
 
-curl:
-	curl http://localhost:8080/greeting
-#	wget -q -O- http://query-query/greeting
 curl-env:
 	curl -s http://localhost:8080/actuator/env | jq | tee env.json
 curl-env-1:
@@ -65,21 +62,12 @@ secrets:
 #	datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1GQUxTRQ==
 #   datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1UUlVF
 
-# run-moon:
-# 	java -jar -Dapp.defaultGreetingMessage=Moon target/query-0.6.0.jar
-# run-jupiter:
-# 	app_defaultGreetingMessage=Jupiter java -jar target/query-0.6.0.jar
-
 docker-run:
 	docker run --rm -p 8080:8080 siakhooi/query:latest
-# docker-run-uranus:
-# 	docker run --rm -p 8080:8080 -e app_defaultGreetingMessage=Uranus siakhooi/query:latest
 # docker-inspect:
 # 	docker inspect siakhooi/query:latest
 # docker-get-base-digest:
 # 	docker inspect eclipse-temurin:21.0.2_13-jre-alpine | jq -r '.[].Id'
-# curl-earth:
-# 	curl http://localhost:8080/greeting?name=Earth
 # curl-actuator:
 # 	curl --no-progress-meter http://localhost:8080/actuator |jq
 # curl-actuator-health:

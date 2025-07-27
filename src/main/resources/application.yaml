@@ -1,6 +1,3 @@
-app:
-  defaultGreetingMessage: World
-
 management:
   endpoints:
     shutdown:

@@ -1,4 +1,4 @@
-package sing.app.query;
+package sing.app.query.config;
 
 import java.util.List;
 

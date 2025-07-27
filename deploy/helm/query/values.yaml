@@ -1,3 +1,4 @@
+# dummy place holder, no longer in used
 app:
   defaultGreetingMessage: Earth
 
@@ -6,7 +7,7 @@ deployment:
 # replicaCount: 1              # set the deployment spec.replicas
 
   image:
-    tag: "0.6.0"
+    tag: "0.7.0"
 #   pullPolicy: IfNotPresent   # set the deployment container pullPolicy
 
   resources:                   # enable to set deployment container resources
