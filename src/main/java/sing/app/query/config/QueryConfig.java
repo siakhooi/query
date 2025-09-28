@@ -27,6 +27,13 @@ public class QueryConfig {
     @Size(min = 1)
     private List<Queryset> querysets = new ArrayList<>();
 
+    public List<Query> getQueries(String querysetName) {
+        return getQuerysets().stream()
+                .filter(qs -> qs.getName().equals(querysetName))
+                .flatMap(qs -> qs.getQueries().stream())
+                .toList();
+    }
+
     @Data
     public static class Queryset {
         @NotBlank

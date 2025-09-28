@@ -43,4 +43,10 @@ public class DatasourceConfig {
         private String password;
 
     }
+
+    public List<Connection> getConnections(String connection) {
+        return getConnections().stream()
+                .filter(conn -> conn.getName().equals(connection))
+                .toList();
+    }
 }

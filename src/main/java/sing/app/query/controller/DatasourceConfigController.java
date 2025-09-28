@@ -22,7 +22,7 @@ public class DatasourceConfigController {
     }
 
     @GetMapping("/config/datasource")
-    @Operation(summary = Util.API_DATASOURCE_SUMMARY, description = Util.API_DATASOURCE_DESCRIPTION)
+    @Operation(summary = Util.API_CONFIG_DATASOURCE_SUMMARY, description = Util.API_CONFIG_DATASOURCE_DESCRIPTION)
     @ApiResponse(responseCode = "200", description = "Success", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE) })
     public DatasourceConfig getDatasourceConfig() {

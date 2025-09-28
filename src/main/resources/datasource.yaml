@@ -1,14 +1,14 @@
 datasource:
   connections:
+    - name: "fruitdb"
+      url: "jdbc:mariadb://localhost:3306/fruitdb"
+      username: "fruituser"
+      password: "fruitpass"
+
     - name: "local"
       url: "jdbc:postgresql://localhost:5432/mydatabase"
       username: "myuser"
       password: "mypassword"
-
-    - name: "remote"
-      url: "jdbc:mysql://remotehost.com:3306/remotedb"
-      username: "remoteuser"
-      password: "remotepassword"
 
     - name: "test"
       url: "jdbc:sqlite::memory:"

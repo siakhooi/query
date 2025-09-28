@@ -21,7 +21,7 @@ public class QueryConfigController {
     }
 
     @GetMapping("/config/query")
-    @Operation(summary = Util.API_QUERY_SUMMARY, description = Util.API_QUERY_DESCRIPTION)
+    @Operation(summary = Util.API_CONFIG_QUERY_SUMMARY, description = Util.API_CONFIG_QUERY_DESCRIPTION)
     @ApiResponse(responseCode = "200", description = "Success", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE) })
     public QueryConfig getQueryConfig() {

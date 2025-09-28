@@ -15,6 +15,7 @@ logging:
   level:
     "org.springframework.cloud.kubernetes": DEBUG
     "org.springframework.web": DEBUG
+    "sing.app.query": DEBUG
 
 spring:
   config:

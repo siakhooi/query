@@ -1,7 +1,18 @@
 query:
   querysets:
-    - name: user
+    - name: fruits
       queries:
-        - name: user
-          connection: in-memory
-          queryString: select user from user
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits
+    - name: fruits-color
+      queries:
+        - name: fruits-red
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits WHERE color='Red'
+        - name: fruits-green
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits WHERE color='Green'
+        - name: fruits-blue
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits WHERE color='Blue'

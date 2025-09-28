@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>sing.app</groupId>
 	<artifactId>query</artifactId>
-	<version>0.7.0</version>
+	<version>0.8.0</version>
 	<name>Query</name>
 	<description>Query</description>
 	<properties>
@@ -20,6 +20,8 @@
 		<spring-cloud-starter-kubernetes-client-config.version>3.3.0</spring-cloud-starter-kubernetes-client-config.version>
 		<springdoc-openapi.version>2.8.9</springdoc-openapi.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
+		<spring.version>5.3.10</spring.version>
+		<mariadb-java-client.version>3.5.6</mariadb-java-client.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -34,6 +36,16 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-kubernetes-client-config</artifactId>
 			<version>${spring-cloud-starter-kubernetes-client-config.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>${mariadb-java-client.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
