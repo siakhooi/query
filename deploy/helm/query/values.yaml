@@ -7,7 +7,7 @@ deployment:
 # replicaCount: 1              # set the deployment spec.replicas
 
   image:
-    tag: "0.8.0"
+    tag: "0.9.0"
 #   pullPolicy: IfNotPresent   # set the deployment container pullPolicy
 
   resources:                   # enable to set deployment container resources
