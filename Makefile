@@ -62,6 +62,10 @@ curl-q1:
 	curl --no-progress-meter http://localhost:8080/query/fruits |jq
 curl-q2:
 	curl --no-progress-meter http://localhost:8080/query/fruits-color |jq
+curl-q3:
+	curl --no-progress-meter http://localhost:8080/query/animals |jq
+curl-q4:
+	curl --no-progress-meter http://localhost:8080/query/all |jq
 
 secrets:
 #	datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1GQUxTRQ==

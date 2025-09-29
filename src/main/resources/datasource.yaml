@@ -5,6 +5,11 @@ datasource:
       username: "fruituser"
       password: "fruitpass"
 
+    - name: "animaldb"
+      url: "jdbc:postgresql://localhost:5432/animaldb"
+      username: "animaluser"
+      password: "password123"
+
     - name: "local"
       url: "jdbc:postgresql://localhost:5432/mydatabase"
       username: "myuser"

@@ -1,10 +1,23 @@
 query:
   querysets:
+    - name: all
+      queries:
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
     - name: fruits
       queries:
         - name: fruits
           connection: fruitdb
           queryString: SELECT NAME, color, taste FROM fruits
+    - name: animals
+      queries:
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
     - name: fruits-color
       queries:
         - name: fruits-red
