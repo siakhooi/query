@@ -4,12 +4,17 @@ on:
     branches:
       - "*"
   pull_request:
-    branches:
-      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
   build-with-maven:
     uses: ./.github/workflows/build-with-maven.yml
+
+  sonarcloud:
+    needs: build-with-maven
+    uses: ./.github/workflows/quality-sonarcloud.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build-docker-images:
     needs: build-with-maven
