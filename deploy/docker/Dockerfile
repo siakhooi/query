@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 MAINTAINER Siak Hooi, Ng
 LABEL org.opencontainers.image.authors="Siak Hooi, Ng"
 LABEL org.opencontainers.image.vendor="Siak Hooi, Ng"
@@ -8,13 +8,13 @@ LABEL org.opencontainers.image.source=https://github.com/siakhooi/query
 LABEL org.opencontainers.image.title=query
 LABEL org.opencontainers.image.description="Query"
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.base.name=eclipse-temurin:21.0.2_13-jre-alpine
-LABEL org.opencontainers.image.base.digest=sha256:d3e9b76faa33518bedb6f8dbe979c6fdf80892da33eb571957e650cb3d67a93e
-LABEL org.opencontainers.image.version=0.10.0
-LABEL org.opencontainers.image.revision=0.11.0
-LABEL org.opencontainers.image.created="2025-09-29 11:50:56.749420865+00:00"
+LABEL org.opencontainers.image.base.name=17-jre-alpine
+LABEL org.opencontainers.image.base.digest=sha256:e7ed585b34913e0a780e0282330183a0ea14ad6b929362d02aea1156b43262bf
+LABEL org.opencontainers.image.version=0.11.0
+LABEL org.opencontainers.image.revision=0.12.0
+LABEL org.opencontainers.image.created="2025-10-10 13:51:13.535750951+00:00"
 
-ARG APP_VERSION=0.10.0
+ARG APP_VERSION=0.11.0
 ARG JAR_NAME=query
 
 EXPOSE 8080

@@ -28,7 +28,7 @@ build:
 	mvn verify
 docker-build:
 	bin/docker-build.sh
-git-push:
+commit:
 	bin/git-commit-and-push.sh
 release:
 	bin/create-release.sh
