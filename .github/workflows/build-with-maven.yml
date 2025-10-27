@@ -15,11 +15,11 @@ jobs:
           java-version: '17'
       - run: mvn verify
       - run: cat release.env >> $GITHUB_ENV
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: deliverables
           path: ./target/${{ env.JAR_NAME }}-${{ env.MAVEN_JAR_VERSION }}.jar
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: target
           path: ./target/
