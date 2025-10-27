@@ -17,11 +17,11 @@ jobs:
       - run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
       - run: bin/helm-unit-test.sh
       - run: helm package deploy/helm/${{ env.HELM_CHART_NAME }}/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: helm-chart
           path: ${{ env.HELM_CHART_NAME }}-${{ env.HELM_CHART_VERSION }}.tgz
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: helm-unit-test.xml
           path: helm-unit-test.xml
