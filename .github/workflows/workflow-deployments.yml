@@ -13,6 +13,18 @@ jobs:
     secrets:
       TOKEN_TO_UPLOAD_ASSETS: ${{ secrets.TOKEN_TO_UPLOAD_ASSETS }}
 
+  sonarcloud:
+    needs: build-with-maven
+    uses: ./.github/workflows/quality-sonarcloud.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  qltysh:
+    needs: build-with-maven
+    uses: ./.github/workflows/quality-qltysh.yml
+    secrets:
+      QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+
   build-docker-images:
     needs: build-with-maven
     uses: ./.github/workflows/build-docker-image.yml
