@@ -17,6 +17,7 @@ microservice to query backend databases
 ### Quality
 
 - https://sonarcloud.io/project/overview?id=siakhooi_query
+- https://qlty.sh/gh/siakhooi/projects/query
 
 ### Base Images
 
@@ -44,6 +45,10 @@ microservice to query backend databases
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/siakhooi/query?label=GPR%20release&logo=github)
 ![GitHub all releases](https://img.shields.io/github/downloads/siakhooi/query/total?color=33cb56&logo=github)
 ![GitHub Release Date](https://img.shields.io/github/release-date/siakhooi/query?logo=github)
+
+![Quality-Qlty](https://img.shields.io/badge/Quality-Qlty-purple)
+[![Maintainability](https://qlty.sh/gh/siakhooi/projects/query/maintainability.svg)](https://qlty.sh/gh/siakhooi/projects/query)
+[![Code Coverage](https://qlty.sh/gh/siakhooi/projects/query/coverage.svg)](https://qlty.sh/gh/siakhooi/projects/query)
 
 ![Quality-Sonar](https://img.shields.io/badge/Quality-SonarCloud-purple)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=siakhooi_query&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=siakhooi_query)
