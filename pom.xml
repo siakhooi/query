@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>sing.app</groupId>
 	<artifactId>query</artifactId>
-	<version>0.11.0</version>
+	<version>0.12.0</version>
 	<name>Query</name>
 	<description>Query</description>
 	<properties>

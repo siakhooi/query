@@ -4,9 +4,9 @@ description: A Helm chart to Query backend databases
 
 type: application
 
-version: 0.12.0
+version: 0.13.0
 
-appVersion: "0.11.0"
+appVersion: "0.12.0"
 
 maintainers:
   - name: Siak Hooi
