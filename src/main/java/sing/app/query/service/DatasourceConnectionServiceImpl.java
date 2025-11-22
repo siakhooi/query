@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
 import org.springframework.stereotype.Service;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 import sing.app.query.config.DatasourceConfig.Connection;
@@ -25,8 +28,25 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
             return connections.get(connection.getName());
 
         } else {
-            DataSource ds = new DriverManagerDataSource(connection.getUrl(), connection.getUsername(),
-                    connection.getPassword());
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(connection.getUrl());
+            config.setUsername(connection.getUsername());
+            config.setPassword(connection.getPassword());
+
+            // Set pool name for better monitoring
+            config.setPoolName(connection.getName() + "-pool");
+
+            // Configure pool settings (with defaults)
+            config.setMaximumPoolSize(connection.getMaximumPoolSize() != null ? connection.getMaximumPoolSize() : 10);
+            config.setMinimumIdle(connection.getMinimumIdle() != null ? connection.getMinimumIdle() : 2);
+            config.setConnectionTimeout(connection.getConnectionTimeout() != null ? connection.getConnectionTimeout() : 30000);
+            config.setIdleTimeout(connection.getIdleTimeout() != null ? connection.getIdleTimeout() : 600000);
+            config.setMaxLifetime(connection.getMaxLifetime() != null ? connection.getMaxLifetime() : 1800000);
+
+            // Disable initialization fail fast to allow lazy initialization
+            config.setInitializationFailTimeout(-1);
+
+            DataSource ds = new HikariDataSource(config);
             DatasourceConnection conn = new MariadbDatasourceConnection(ds);
             connections.put(connection.getName(), conn);
             log.debug("Created new connection: {}", connection.getName());

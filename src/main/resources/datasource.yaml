@@ -4,11 +4,18 @@ datasource:
       url: "jdbc:mariadb://localhost:3306/fruitdb"
       username: "fruituser"
       password: "fruitpass"
+      maximumPoolSize: 10
+      minimumIdle: 2
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800000
 
     - name: "animaldb"
       url: "jdbc:postgresql://localhost:5432/animaldb"
       username: "animaluser"
       password: "password123"
+      maximumPoolSize: 10
+      minimumIdle: 2
 
     - name: "local"
       url: "jdbc:postgresql://localhost:5432/mydatabase"

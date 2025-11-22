@@ -24,6 +24,8 @@ class DatasourceConnectionServiceImplTest {
         when(mockConn.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/test");
         when(mockConn.getUsername()).thenReturn("user");
         when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getMaximumPoolSize()).thenReturn(10);
+        when(mockConn.getMinimumIdle()).thenReturn(2);
 
         DatasourceConnection result = service.getConnection(mockConn);
 
@@ -38,6 +40,8 @@ class DatasourceConnectionServiceImplTest {
         when(mockConn.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/test");
         when(mockConn.getUsername()).thenReturn("user");
         when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getMaximumPoolSize()).thenReturn(10);
+        when(mockConn.getMinimumIdle()).thenReturn(2);
 
         DatasourceConnection first = service.getConnection(mockConn);
         DatasourceConnection second = service.getConnection(mockConn);
@@ -52,12 +56,16 @@ class DatasourceConnectionServiceImplTest {
         when(conn1.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/db1");
         when(conn1.getUsername()).thenReturn("user1");
         when(conn1.getPassword()).thenReturn("pass1");
+        when(conn1.getMaximumPoolSize()).thenReturn(10);
+        when(conn1.getMinimumIdle()).thenReturn(2);
 
         Connection conn2 = mock(Connection.class);
         when(conn2.getName()).thenReturn("db2");
         when(conn2.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/db2");
         when(conn2.getUsername()).thenReturn("user2");
         when(conn2.getPassword()).thenReturn("pass2");
+        when(conn2.getMaximumPoolSize()).thenReturn(10);
+        when(conn2.getMinimumIdle()).thenReturn(2);
 
         DatasourceConnection result1 = service.getConnection(conn1);
         DatasourceConnection result2 = service.getConnection(conn2);

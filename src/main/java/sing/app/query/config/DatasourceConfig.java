@@ -42,6 +42,22 @@ public class DatasourceConfig {
         @JsonIgnore
         private String password;
 
+        // HikariCP pool configuration properties
+        @JsonInclude(Include.NON_NULL)
+        private Integer maximumPoolSize;
+
+        @JsonInclude(Include.NON_NULL)
+        private Integer minimumIdle;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long connectionTimeout;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long idleTimeout;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long maxLifetime;
+
     }
 
     public List<Connection> getConnections(String connection) {
