@@ -1,0 +1,27 @@
+management:
+  endpoints:
+    shutdown:
+      enabled: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: always
+    configprops:
+      show-values: always
+
+logging:
+  level:
+    "org.springframework.cloud.kubernetes": INFO
+    "org.springframework.web": INFO
+    "sing.app.query": INFO
+
+spring:
+  config:
+    import:
+      - datasource.yaml
+      - query.yaml
+
+server:
+  port: 8080

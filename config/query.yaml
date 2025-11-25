@@ -1,0 +1,50 @@
+query:
+  querysets:
+    # Combined queryset - returns data from multiple databases
+    - name: all
+      queries:
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
+
+    # Individual querysets
+    - name: fruits
+      queries:
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits
+
+    - name: animals
+      queries:
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
+
+    # Filtered fruit queries by color
+    - name: fruits-color
+      queries:
+        - name: fruits-red
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits WHERE color='Red'
+        - name: fruits-yellow
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits WHERE color='Yellow'
+        - name: fruits-green
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits WHERE color='Green'
+
+    # Example of counting queries
+    - name: statistics
+      queries:
+        - name: fruit-count
+          connection: fruitdb
+          queryString: SELECT COUNT(*) as total_fruits FROM fruits
+        - name: animal-count
+          connection: animaldb
+          queryString: SELECT COUNT(*) as total_animals FROM animals
+        - name: animals-by-diet
+          connection: animaldb
+          queryString: SELECT diet, COUNT(*) as count FROM animals GROUP BY diet ORDER BY count DESC

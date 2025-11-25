@@ -1,0 +1,79 @@
+services:
+  # MariaDB for fruits database
+  mariadb:
+    image: mariadb:latest
+    container_name: query-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: fruitdb
+      MYSQL_USER: fruituser
+      MYSQL_PASSWORD: fruitpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ../sample/fruit.sql:/docker-entrypoint-initdb.d/fruit.sql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - query-network
+
+  # PostgreSQL for animals database
+  postgres:
+    image: postgres:16
+    container_name: query-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../sample/animal.sql:/docker-entrypoint-initdb.d/animal.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - query-network
+
+  # Query microservice
+  query:
+    image: siakhooi/query:latest
+    container_name: query-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
+    volumes:
+      - ../config:/config:ro
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - query-network
+    restart: unless-stopped
+
+volumes:
+  mariadb_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  query-network:
+    driver: bridge

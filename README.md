@@ -6,6 +6,18 @@ microservice to query backend databases
   - mariadb
   - postgresql
 
+## Documentation
+
+🚀 **[Quick Start](user-guide/QUICKSTART.md)** - Get up and running in 5 minutes
+
+📚 **[Usage Guide](user-guide/USAGE.md)** - Complete guide on how to run and configure the Query microservice:
+- Running the JAR
+- Running with Docker
+- Running with Docker Compose
+- Running with Helm Chart
+- Configuration examples
+- Sample data setup
+
 ## Reference:
 
 ### Deliverables
