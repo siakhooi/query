@@ -118,6 +118,8 @@ k-pf:
 # k-edit-cm:
 # 	shed-kubectl edit cm/query
 
+helm-unit-test-install:
+	helm plugin install https://github.com/helm-unittest/helm-unittest.git
 k3d-load-image:
 	k3d-image-import siakhooi/query:0.5.0
 
