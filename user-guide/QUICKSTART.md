@@ -60,7 +60,7 @@ If you prefer to use Docker without Docker Compose:
 # Pull the image
 docker pull siakhooi/query:latest
 
-# Run with in-memory database (no setup required)
+# Run the service
 docker run --rm -p 8080:8080 siakhooi/query:latest
 
 # Test

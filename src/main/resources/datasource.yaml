@@ -21,9 +21,3 @@ datasource:
       url: "jdbc:postgresql://localhost:5432/mydatabase"
       username: "myuser"
       password: "mypassword"
-
-    - name: "test"
-      url: "jdbc:sqlite::memory:"
-
-    - name: "in-memory"
-      url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"

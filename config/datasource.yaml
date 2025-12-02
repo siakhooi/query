@@ -21,7 +21,3 @@ datasource:
       connectionTimeout: 30000
       idleTimeout: 600000
       maxLifetime: 1800000
-
-    # In-memory H2 database for testing
-    - name: "in-memory"
-      url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"

@@ -10,11 +10,11 @@ LABEL org.opencontainers.image.description="Query"
 LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.base.name=21-jre-alpine
 LABEL org.opencontainers.image.base.digest=sha256:e7ed585b34913e0a780e0282330183a0ea14ad6b929362d02aea1156b43262bf
-LABEL org.opencontainers.image.version=0.13.2
-LABEL org.opencontainers.image.revision=0.14.2
-LABEL org.opencontainers.image.created="2025-11-26 08:27:46.274563415+00:00"
+LABEL org.opencontainers.image.version=0.13.3
+LABEL org.opencontainers.image.revision=0.14.3
+LABEL org.opencontainers.image.created="2025-12-02 04:04:07.647964763+00:00"
 
-ARG APP_VERSION=0.13.2
+ARG APP_VERSION=0.13.3
 ARG JAR_NAME=query
 
 EXPOSE 8080

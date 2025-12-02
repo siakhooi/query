@@ -394,10 +394,6 @@ datasource:
       password: "password123"
       maximumPoolSize: 10
       minimumIdle: 2
-
-    # In-memory H2 for testing
-    - name: "in-memory"
-      url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
 ```
 
 ### Query Definitions (query.yaml)
