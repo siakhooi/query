@@ -5,6 +5,7 @@ microservice to query backend databases
 - Currently supported databases:
   - mariadb
   - postgresql
+  - mongodb
 
 ## Documentation
 

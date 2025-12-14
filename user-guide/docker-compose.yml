@@ -43,6 +43,27 @@ services:
     networks:
       - query-network
 
+  # MongoDB for books database
+  mongodb:
+    image: mongo:7
+    container_name: query-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpass
+      MONGO_INITDB_DATABASE: bookdb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ../sample/book.js:/docker-entrypoint-initdb.d/book.js
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - query-network
+
   # Query microservice
   query:
     image: siakhooi/query:latest
@@ -50,13 +71,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
+      - SPRING_CONFIG_LOCATION=file:/config/
     volumes:
       - ../config:/config:ro
     depends_on:
       mariadb:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      mongodb:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
@@ -72,6 +95,8 @@ volumes:
   mariadb_data:
     driver: local
   postgres_data:
+    driver: local
+  mongodb_data:
     driver: local
 
 networks:

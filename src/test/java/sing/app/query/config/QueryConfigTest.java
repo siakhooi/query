@@ -67,9 +67,13 @@ class QueryConfigTest {
         QueryConfig.Query q = new QueryConfig.Query();
         q.setName("testquery");
         q.setQueryString("SELECT 1");
+        q.setCollection("books");
+        q.setFilter("{\"genre\":\"Fiction\"}");
         q.setConnection("testconn");
         assertEquals("testquery", q.getName());
         assertEquals("SELECT 1", q.getQueryString());
+        assertEquals("books", q.getCollection());
+        assertEquals("{\"genre\":\"Fiction\"}", q.getFilter());
         assertEquals("testconn", q.getConnection());
     }
 

@@ -25,7 +25,7 @@ clean:
 setversion:
 	bin/update-versions.sh
 build:
-	mvn verify
+	mvn -U verify
 docker-build:
 	bin/docker-build.sh
 commit:

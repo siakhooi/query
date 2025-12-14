@@ -62,7 +62,14 @@ public class QueryController {
                 throw new ResponseStatusException(BAD_REQUEST, "Multiple connections found");
             }
             DatasourceConnection dc = dcs.getConnection(connections.get(0));
-            List<Map<String, Object>> result = dc.execute(query.getQueryString());
+
+            Connection conn = connections.get(0);
+            List<Map<String, Object>> result;
+            if ("mongodb".equalsIgnoreCase(conn.getType())) {
+                result = dc.execute(null, query.getCollection(), query.getFilter());
+            } else {
+                result = dc.execute(query.getQueryString(), null, null);
+            }
             results.put(query.getName(), result);
         }
 

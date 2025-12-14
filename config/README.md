@@ -40,13 +40,32 @@ docker-compose up -d
 When using Docker Compose, use the service names as hostnames:
 - MariaDB: `mariadb:3306`
 - PostgreSQL: `postgres:5432`
+- MongoDB: `mongodb:27017`
 
 ### Local Development
 When running locally, use:
 - MariaDB: `localhost:3306`
 - PostgreSQL: `localhost:5432`
+- MongoDB: `localhost:27017`
 
 ### Kubernetes
 When deploying to Kubernetes with Helm, use Kubernetes service names:
 - MariaDB: `mariadb-service:3306`
 - PostgreSQL: `postgres-service:5432`
+- MongoDB: `mongodb-service:27017`
+
+## Database Types
+
+The application supports two connection types:
+
+### JDBC Connections
+Used for relational databases (MariaDB, PostgreSQL, etc.)
+- Type: `jdbc`
+- Uses standard SQL queries
+- Example: `SELECT * FROM table_name WHERE condition`
+
+### MongoDB Connections
+Used for MongoDB databases
+- Type: `mongodb`
+- Queries are configured with explicit fields: `collection` and optional `filter`
+- Example: `collection: books` + `filter: '{"genre":"Fiction"}'`

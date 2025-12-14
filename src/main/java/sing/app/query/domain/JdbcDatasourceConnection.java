@@ -10,19 +10,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MariadbDatasourceConnection implements DatasourceConnection {
+public class JdbcDatasourceConnection implements DatasourceConnection {
 
     private JdbcTemplate jdbcTemplate;
 
-    public MariadbDatasourceConnection(DataSource datasource) {
+    public JdbcDatasourceConnection(DataSource datasource) {
         this.jdbcTemplate = new JdbcTemplate(datasource);
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString) {
-        log.debug("Executing {}", queryString);
+    public List<Map<String, Object>> execute(String queryString, String collection, String filter) {
+        log.debug("Executing JDBC query: {}", queryString);
         return jdbcTemplate.queryForList(queryString);
-
     }
-
 }

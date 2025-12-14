@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>sing.app</groupId>
 	<artifactId>query</artifactId>
-	<version>0.13.3</version>
+	<version>0.14.0</version>
 	<name>Query</name>
 	<description>Query</description>
 	<properties>
@@ -54,6 +54,10 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql-jdbc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>

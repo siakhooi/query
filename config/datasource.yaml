@@ -1,7 +1,8 @@
 datasource:
   connections:
-    # MariaDB connection for fruits database
+    # MariaDB connection for fruits database (JDBC)
     - name: "fruitdb"
+      type: "jdbc"
       url: "jdbc:mariadb://mariadb:3306/fruitdb"
       username: "fruituser"
       password: "fruitpass"
@@ -11,8 +12,9 @@ datasource:
       idleTimeout: 600000
       maxLifetime: 1800000
 
-    # PostgreSQL connection for animals database
+    # PostgreSQL connection for animals database (JDBC)
     - name: "animaldb"
+      type: "jdbc"
       url: "jdbc:postgresql://postgres:5432/animaldb"
       username: "animaluser"
       password: "password123"
@@ -21,3 +23,11 @@ datasource:
       connectionTimeout: 30000
       idleTimeout: 600000
       maxLifetime: 1800000
+
+    # MongoDB connection for books database
+    - name: "bookdb"
+      type: "mongodb"
+      url: "mongodb://mongodb:27017"
+      database: "bookdb"
+      username: "bookuser"
+      password: "bookpass"

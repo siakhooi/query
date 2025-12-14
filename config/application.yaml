@@ -10,6 +10,9 @@ management:
       show-values: always
     configprops:
       show-values: always
+  health:
+    mongo:
+      enabled: false
 
 logging:
   level:
@@ -20,8 +23,8 @@ logging:
 spring:
   config:
     import:
-      - datasource.yaml
-      - query.yaml
+      - optional:file:/config/datasource.yaml
+      - optional:file:/config/query.yaml
 
 server:
   port: 8080

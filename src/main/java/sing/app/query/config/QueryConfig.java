@@ -49,9 +49,14 @@ public class QueryConfig {
         @NotBlank
         private String name;
 
-        @NotBlank
         @JsonIgnore
         private String queryString;
+
+        @JsonIgnore
+        private String collection;
+
+        @JsonIgnore
+        private String filter;
 
         @NotBlank
         @JsonInclude(Include.NON_NULL)

@@ -1,6 +1,6 @@
 query:
   querysets:
-    # Combined queryset - returns data from multiple databases
+    # Combined queryset - returns data from multiple databases (JDBC + MongoDB)
     - name: all
       queries:
         - name: fruits
@@ -9,6 +9,9 @@ query:
         - name: animals
           connection: animaldb
           queryString: SELECT name, species, age, habitat, diet FROM animals
+        - name: books
+          connection: bookdb
+          collection: books
 
     # Individual querysets
     - name: fruits
@@ -22,6 +25,21 @@ query:
         - name: animals
           connection: animaldb
           queryString: SELECT name, species, age, habitat, diet FROM animals
+
+    # MongoDB querysets
+    - name: books
+      queries:
+        - name: books
+          connection: bookdb
+          collection: books
+
+    # Filtered MongoDB queries
+    - name: books-fiction
+      queries:
+        - name: books-fiction
+          connection: bookdb
+          collection: books
+          filter: '{"genre":"Fiction"}'
 
     # Filtered fruit queries by color
     - name: fruits-color

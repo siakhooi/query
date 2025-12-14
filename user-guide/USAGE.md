@@ -16,10 +16,11 @@ This guide provides detailed instructions on how to run the Query microservice u
 
 ## Overview
 
-Query is a microservice that queries backend databases (MariaDB and PostgreSQL) and returns results as JSON. It provides:
-- Configurable data connections
+Query is a microservice that queries backend databases (MariaDB, PostgreSQL, and MongoDB) and returns results as JSON. It provides:
+- Configurable data connections (JDBC and MongoDB)
 - Multiple query definitions
 - RESTful API endpoints
+- Ability to combine data from multiple database types
 - Health monitoring via Spring Boot Actuator
 
 ## Prerequisites
@@ -27,7 +28,7 @@ Query is a microservice that queries backend databases (MariaDB and PostgreSQL) 
 ### For Running JAR
 - Java 17 or higher
 - Maven 3.6+ (for building from source)
-- Access to MariaDB and/or PostgreSQL databases
+- Access to MariaDB, PostgreSQL, and/or MongoDB databases
 
 ### For Running Docker
 - Docker 20.10+
@@ -211,10 +212,18 @@ docker run -d --name postgres \
   -p 5432:5432 \
   postgres:16
 
+# Start MongoDB
+docker run -d --name mongodb \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=adminpass \
+  -p 27017:27017 \
+  mongo:7
+
 # Run query service with network access to databases
 docker run --rm -p 8080:8080 \
   --link mariadb:mariadb \
   --link postgres:postgres \
+  --link mongodb:mongodb \
   -v $(pwd)/../config:/config \
   -e SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/ \
   siakhooi/query:latest
@@ -242,12 +251,22 @@ docker-compose down -v
 
 ### 2. Initialize Sample Data
 
+Sample data is automatically loaded during container initialization through the init scripts mounted in docker-compose.yml:
+- MariaDB: `../sample/fruit.sql`
+- PostgreSQL: `../sample/animal.sql`
+- MongoDB: `../sample/book.js`
+
+If you need to reload the data manually:
+
 ```bash
 # Load fruit data into MariaDB
 docker-compose exec mariadb mysql -uroot -prootpass < ../sample/fruit.sql
 
 # Load animal data into PostgreSQL
 docker-compose exec postgres psql -U postgres < ../sample/animal.sql
+
+# Load book data into MongoDB
+docker-compose exec mongodb mongosh --username admin --password adminpass --authenticationDatabase admin /docker-entrypoint-initdb.d/book.js
 ```
 
 See the [docker-compose.yml](docker-compose.yml) file for the complete configuration.
@@ -376,8 +395,9 @@ spring:
 ```yaml
 datasource:
   connections:
-    # MariaDB example
+    # MariaDB example (JDBC)
     - name: "fruitdb"
+      type: "jdbc"
       url: "jdbc:mariadb://localhost:3306/fruitdb"
       username: "fruituser"
       password: "fruitpass"
@@ -387,13 +407,22 @@ datasource:
       idleTimeout: 600000
       maxLifetime: 1800000
 
-    # PostgreSQL example
+    # PostgreSQL example (JDBC)
     - name: "animaldb"
+      type: "jdbc"
       url: "jdbc:postgresql://localhost:5432/animaldb"
       username: "animaluser"
       password: "password123"
       maximumPoolSize: 10
       minimumIdle: 2
+
+    # MongoDB example
+    - name: "bookdb"
+      type: "mongodb"
+      url: "mongodb://localhost:27017"
+      database: "bookdb"
+      username: "bookuser"
+      password: "bookpass"
 ```
 
 ### Query Definitions (query.yaml)
@@ -401,7 +430,7 @@ datasource:
 ```yaml
 query:
   querysets:
-    # Queryset that combines multiple queries
+    # Queryset that combines multiple queries from different database types
     - name: all
       queries:
         - name: fruits
@@ -424,6 +453,13 @@ query:
           connection: animaldb
           queryString: SELECT name, species, age, habitat, diet FROM animals
 
+    # MongoDB queries
+    - name: books
+      queries:
+        - name: books
+          connection: bookdb
+          collection: books
+
     # Filtered queries
     - name: fruits-color
       queries:
@@ -433,6 +469,27 @@ query:
         - name: fruits-yellow
           connection: fruitdb
           queryString: SELECT name, color, taste FROM fruits WHERE color='Yellow'
+
+    # MongoDB filtered query
+    - name: books-fiction
+      queries:
+        - name: books-fiction
+          connection: bookdb
+          collection: books
+          filter: '{"genre":"Fiction"}'
+
+    # Combined queryset from JDBC and MongoDB
+    - name: combined
+      queries:
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT name, color, taste FROM fruits
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
+        - name: books
+          connection: bookdb
+          collection: books
 ```
 
 ## Sample Data Setup
@@ -471,6 +528,34 @@ This creates:
 - User: `animaluser` with password `password123`
 - Table: `animals` with 20 sample animal records
 
+### MongoDB - Books Database
+
+The `sample/book.js` file contains sample data for testing:
+
+```bash
+# If using Docker
+docker-compose exec mongodb mongosh --username admin --password adminpass --authenticationDatabase admin /docker-entrypoint-initdb.d/book.js
+
+# If using local MongoDB
+mongosh --username admin --password adminpass --authenticationDatabase admin < sample/book.js
+```
+
+This creates:
+- Database: `bookdb`
+- User: `bookuser` with password `bookpass`
+- Collection: `books` with 10 sample book records
+
+### MongoDB Query Format
+
+MongoDB queries use explicit fields in `query.yaml`:
+- Basic query: `collection: collectionName`
+- Filtered query: `collection: collectionName` + `filter: '{"field":"value"}'`
+
+Examples:
+- `collection: books` - Get all books
+- `collection: books` + `filter: '{"genre":"Fiction"}'` - Get fiction books
+- `collection: books` + `filter: '{"year":{"$gt":2000}}'` - Get books published after 2000
+
 ## Testing the Service
 
 ### Health Check
@@ -490,6 +575,15 @@ curl http://localhost:8080/query/animals | jq
 
 # Get combined results (fruits and animals)
 curl http://localhost:8080/query/all | jq
+
+# Get all books (MongoDB)
+curl http://localhost:8080/query/books | jq
+
+# Get filtered books by genre (MongoDB)
+curl http://localhost:8080/query/books-fiction | jq
+
+# Get combined results from JDBC and MongoDB
+curl http://localhost:8080/query/combined | jq
 
 # Get filtered fruits by color
 curl http://localhost:8080/query/fruits-color | jq

@@ -8,20 +8,20 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MariadbDatasourceConnectionTest {
+class JdbcDatasourceConnectionTest {
 
     private DataSource mockDataSource;
     private JdbcTemplate mockJdbcTemplate;
-    private MariadbDatasourceConnection connection;
+    private JdbcDatasourceConnection connection;
 
     @BeforeEach
     void setUp() {
         mockDataSource = mock(DataSource.class);
         mockJdbcTemplate = mock(JdbcTemplate.class);
         // Use reflection to inject mockJdbcTemplate
-        connection = new MariadbDatasourceConnection(mockDataSource);
+        connection = new JdbcDatasourceConnection(mockDataSource);
         try {
-            var field = MariadbDatasourceConnection.class.getDeclaredField("jdbcTemplate");
+            var field = JdbcDatasourceConnection.class.getDeclaredField("jdbcTemplate");
             field.setAccessible(true);
             field.set(connection, mockJdbcTemplate);
         } catch (Exception e) {
@@ -40,7 +40,7 @@ class MariadbDatasourceConnectionTest {
 
         when(mockJdbcTemplate.queryForList(query)).thenReturn(expected);
 
-        List<Map<String, Object>> result = connection.execute(query);
+        List<Map<String, Object>> result = connection.execute(query, null, null);
 
         assertEquals(expected, result);
         verify(mockJdbcTemplate, times(1)).queryForList(query);
@@ -51,7 +51,7 @@ class MariadbDatasourceConnectionTest {
         String query = "SELECT * FROM empty_table";
         when(mockJdbcTemplate.queryForList(query)).thenReturn(Collections.emptyList());
 
-        List<Map<String, Object>> result = connection.execute(query);
+        List<Map<String, Object>> result = connection.execute(query, null, null);
 
         assertTrue(result.isEmpty());
         verify(mockJdbcTemplate).queryForList(query);
@@ -62,7 +62,7 @@ class MariadbDatasourceConnectionTest {
         String query = "SELECT * FROM invalid";
         when(mockJdbcTemplate.queryForList(query)).thenThrow(new RuntimeException("DB error"));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query));
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query, null, null));
         assertEquals("DB error", thrown.getMessage());
         verify(mockJdbcTemplate).queryForList(query);
     }

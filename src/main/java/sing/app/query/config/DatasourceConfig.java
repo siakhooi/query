@@ -33,6 +33,10 @@ public class DatasourceConfig {
         private String name;
 
         @NotBlank
+        @JsonInclude(Include.NON_NULL)
+        private String type;
+
+        @NotBlank
         @JsonIgnore
         private String url;
 
@@ -41,6 +45,10 @@ public class DatasourceConfig {
 
         @JsonIgnore
         private String password;
+
+        // MongoDB specific property
+        @JsonInclude(Include.NON_NULL)
+        private String database;
 
         // HikariCP pool configuration properties
         @JsonInclude(Include.NON_NULL)

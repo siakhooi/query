@@ -29,3 +29,25 @@ query:
         - name: fruits-blue
           connection: fruitdb
           queryString: SELECT NAME, color, taste FROM fruits WHERE color='Blue'
+    - name: books
+      queries:
+        - name: books
+          connection: bookdb
+          collection: books
+    - name: books-fiction
+      queries:
+        - name: books-fiction
+          connection: bookdb
+          collection: books
+          filter: '{"genre":"Fiction"}'
+    - name: combined
+      queries:
+        - name: fruits
+          connection: fruitdb
+          queryString: SELECT NAME, color, taste FROM fruits
+        - name: animals
+          connection: animaldb
+          queryString: SELECT name, species, age, habitat, diet FROM animals
+        - name: books
+          connection: bookdb
+          collection: books

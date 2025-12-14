@@ -5,6 +5,6 @@ import java.util.Map;
 
 public interface DatasourceConnection {
 
-    List<Map<String, Object>> execute(String queryString);
+    List<Map<String, Object>> execute(String queryString, String collection, String filter);
 
 }

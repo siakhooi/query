@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sing.app.query.config.DatasourceConfig.Connection;
 import sing.app.query.domain.DatasourceConnection;
-import sing.app.query.domain.MariadbDatasourceConnection;
+import sing.app.query.domain.JdbcDatasourceConnection;
+import sing.app.query.domain.MongodbDatasourceConnection;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,9 +19,10 @@ class DatasourceConnectionServiceImplTest {
     }
 
     @Test
-    void testGetConnectionCreatesNewConnection() {
+    void testGetConnectionCreatesNewJdbcConnection() {
         Connection mockConn = mock(Connection.class);
         when(mockConn.getName()).thenReturn("testdb");
+        when(mockConn.getType()).thenReturn("jdbc");
         when(mockConn.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/test");
         when(mockConn.getUsername()).thenReturn("user");
         when(mockConn.getPassword()).thenReturn("pass");
@@ -30,13 +32,30 @@ class DatasourceConnectionServiceImplTest {
         DatasourceConnection result = service.getConnection(mockConn);
 
         assertNotNull(result);
-        assertTrue(result instanceof MariadbDatasourceConnection);
+        assertTrue(result instanceof JdbcDatasourceConnection);
+    }
+
+    @Test
+    void testGetConnectionCreatesNewMongodbConnection() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongodb-test");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getDatabase()).thenReturn("testdb");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn("pass");
+
+        DatasourceConnection result = service.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof MongodbDatasourceConnection);
     }
 
     @Test
     void testGetConnectionReusesExistingConnection() {
         Connection mockConn = mock(Connection.class);
         when(mockConn.getName()).thenReturn("testdb");
+        when(mockConn.getType()).thenReturn("jdbc");
         when(mockConn.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/test");
         when(mockConn.getUsername()).thenReturn("user");
         when(mockConn.getPassword()).thenReturn("pass");
@@ -53,6 +72,7 @@ class DatasourceConnectionServiceImplTest {
     void testGetConnectionWithDifferentNamesCreatesDifferentConnections() {
         Connection conn1 = mock(Connection.class);
         when(conn1.getName()).thenReturn("db1");
+        when(conn1.getType()).thenReturn("jdbc");
         when(conn1.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/db1");
         when(conn1.getUsername()).thenReturn("user1");
         when(conn1.getPassword()).thenReturn("pass1");
@@ -61,6 +81,7 @@ class DatasourceConnectionServiceImplTest {
 
         Connection conn2 = mock(Connection.class);
         when(conn2.getName()).thenReturn("db2");
+        when(conn2.getType()).thenReturn("jdbc");
         when(conn2.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/db2");
         when(conn2.getUsername()).thenReturn("user2");
         when(conn2.getPassword()).thenReturn("pass2");

@@ -36,8 +36,12 @@ curl http://localhost:8080/query/fruits | jq
 # Query animals
 curl http://localhost:8080/query/animals | jq
 
+# Query books
+curl http://localhost:8080/query/books | jq
+
 # Get combined results
 curl http://localhost:8080/query/all | jq
+curl http://localhost:8080/query/combined | jq
 ```
 
 ### Step 4: Explore the API
