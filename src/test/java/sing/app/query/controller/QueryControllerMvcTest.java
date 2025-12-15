@@ -1,30 +1,27 @@
 package sing.app.query.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.MockMvc;
-
-import sing.app.query.config.DatasourceConfig;
-import sing.app.query.domain.DatasourceConnection;
-import sing.app.query.service.DatasourceConnectionService;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.web.servlet.MockMvc;
+import sing.app.query.config.DatasourceConfig;
+import sing.app.query.domain.DatasourceConnection;
+import sing.app.query.service.DatasourceConnectionService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,7 +40,7 @@ class QueryControllerMvcTest {
         DatasourceConnection dc=mock(DatasourceConnection.class);
         when(dcs.getConnection(any())).thenReturn(dc);
         List<Map<String, Object>> result=new ArrayList<>();
-        when(dc.execute(any(), any(), any())).thenReturn(result);
+        when(dc.execute(any(), any(), any(), any())).thenReturn(result);
     }
 
     @Test

@@ -2,19 +2,15 @@ package sing.app.query.config;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import lombok.Data;
 
 @Configuration
@@ -57,6 +53,9 @@ public class QueryConfig {
 
         @JsonIgnore
         private String filter;
+
+        @JsonIgnore
+        private String fields;
 
         @NotBlank
         @JsonInclude(Include.NON_NULL)

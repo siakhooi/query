@@ -16,7 +16,7 @@ cd query/user-guide
 ### Step 2: Start All Services
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start:
@@ -41,7 +41,13 @@ curl http://localhost:8080/query/books | jq
 
 # Get combined results
 curl http://localhost:8080/query/all | jq
-curl http://localhost:8080/query/combined | jq
+
+curl http://localhost:8080/query/statistics | jq
+
+curl http://localhost:8080/query/fruits-color | jq
+
+curl http://localhost:8080/query/books-fiction | jq
+curl http://localhost:8080/query/books-selected-fields | jq
 ```
 
 ### Step 4: Explore the API

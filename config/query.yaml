@@ -41,7 +41,19 @@ query:
           collection: books
           filter: '{"genre":"Fiction"}'
 
-    # Filtered fruit queries by color
+    - name: books-selected-fields
+      queries:
+        - name: books-title-author
+          connection: bookdb
+          collection: books
+          fields: '{"title": 1, "author": 1, "_id": 0}'
+        - name: books-fiction-selected
+          connection: bookdb
+          collection: books
+          filter: '{"genre":"Fiction"}'
+          fields: '{"title": 1, "author": 1, "published": 1, "year": 1}'
+
+    # Filtered fruit queries by colorW
     - name: fruits-color
       queries:
         - name: fruits-red

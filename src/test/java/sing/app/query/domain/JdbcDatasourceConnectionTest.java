@@ -1,12 +1,21 @@
 package sing.app.query.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import javax.sql.DataSource;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class JdbcDatasourceConnectionTest {
 
@@ -40,7 +49,7 @@ class JdbcDatasourceConnectionTest {
 
         when(mockJdbcTemplate.queryForList(query)).thenReturn(expected);
 
-        List<Map<String, Object>> result = connection.execute(query, null, null);
+        List<Map<String, Object>> result = connection.execute(query, null, null, null);
 
         assertEquals(expected, result);
         verify(mockJdbcTemplate, times(1)).queryForList(query);
@@ -51,7 +60,7 @@ class JdbcDatasourceConnectionTest {
         String query = "SELECT * FROM empty_table";
         when(mockJdbcTemplate.queryForList(query)).thenReturn(Collections.emptyList());
 
-        List<Map<String, Object>> result = connection.execute(query, null, null);
+        List<Map<String, Object>> result = connection.execute(query, null, null, null);
 
         assertTrue(result.isEmpty());
         verify(mockJdbcTemplate).queryForList(query);
@@ -62,7 +71,7 @@ class JdbcDatasourceConnectionTest {
         String query = "SELECT * FROM invalid";
         when(mockJdbcTemplate.queryForList(query)).thenThrow(new RuntimeException("DB error"));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query, null, null));
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query, null, null, null));
         assertEquals("DB error", thrown.getMessage());
         verify(mockJdbcTemplate).queryForList(query);
     }

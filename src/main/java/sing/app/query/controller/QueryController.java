@@ -1,14 +1,14 @@
 package sing.app.query.controller;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.server.ResponseStatusException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,9 +20,6 @@ import sing.app.query.config.QueryConfig;
 import sing.app.query.config.QueryConfig.Query;
 import sing.app.query.domain.DatasourceConnection;
 import sing.app.query.service.DatasourceConnectionService;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Slf4j
@@ -66,9 +63,9 @@ public class QueryController {
             Connection conn = connections.get(0);
             List<Map<String, Object>> result;
             if ("mongodb".equalsIgnoreCase(conn.getType())) {
-                result = dc.execute(null, query.getCollection(), query.getFilter());
+                result = dc.execute(null, query.getCollection(), query.getFilter(), query.getFields());
             } else {
-                result = dc.execute(query.getQueryString(), null, null);
+                result = dc.execute(query.getQueryString(), null, null, null);
             }
             results.put(query.getName(), result);
         }
