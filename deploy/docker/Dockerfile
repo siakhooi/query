@@ -1,5 +1,4 @@
 FROM eclipse-temurin:21-jre-alpine
-MAINTAINER Siak Hooi, Ng
 LABEL org.opencontainers.image.authors="Siak Hooi, Ng"
 LABEL org.opencontainers.image.vendor="Siak Hooi, Ng"
 LABEL org.opencontainers.image.url=https://hub.docker.com/r/siakhooi/query
@@ -12,7 +11,7 @@ LABEL org.opencontainers.image.base.name=21-jre-alpine
 LABEL org.opencontainers.image.base.digest=sha256:e7ed585b34913e0a780e0282330183a0ea14ad6b929362d02aea1156b43262bf
 LABEL org.opencontainers.image.version=0.14.0
 LABEL org.opencontainers.image.revision=0.15.0
-LABEL org.opencontainers.image.created="2025-12-15 10:27:17.521260953+00:00"
+LABEL org.opencontainers.image.created="2025-12-15 11:35:27.734423199+00:00"
 
 ARG APP_VERSION=0.14.0
 ARG JAR_NAME=query
