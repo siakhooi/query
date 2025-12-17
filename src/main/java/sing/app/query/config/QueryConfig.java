@@ -57,6 +57,9 @@ public class QueryConfig {
         @JsonIgnore
         private String fields;
 
+        @JsonIgnore
+        private String sort;
+
         @NotBlank
         @JsonInclude(Include.NON_NULL)
         private String connection;

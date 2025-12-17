@@ -63,9 +63,9 @@ public class QueryController {
             Connection conn = connections.get(0);
             List<Map<String, Object>> result;
             if ("mongodb".equalsIgnoreCase(conn.getType())) {
-                result = dc.execute(null, query.getCollection(), query.getFilter(), query.getFields());
+                result = dc.execute(null, query.getCollection(), query.getFilter(), query.getFields(), query.getSort());
             } else {
-                result = dc.execute(query.getQueryString(), null, null, null);
+                result = dc.execute(query.getQueryString(), null, null, null, null);
             }
             results.put(query.getName(), result);
         }

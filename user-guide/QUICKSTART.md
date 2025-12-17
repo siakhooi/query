@@ -22,6 +22,7 @@ docker compose up -d
 This will start:
 - MariaDB with sample fruit data
 - PostgreSQL with sample animal data
+- MongoDB with sample book data
 - Query microservice on port 8080
 
 ### Step 3: Test the Service
@@ -48,6 +49,9 @@ curl http://localhost:8080/query/fruits-color | jq
 
 curl http://localhost:8080/query/books-fiction | jq
 curl http://localhost:8080/query/books-selected-fields | jq
+curl http://localhost:8080/query/books-sorted-by-title | jq
+curl http://localhost:8080/query/books-sorted-multi | jq
+curl http://localhost:8080/query/books-fiction-sorted | jq
 ```
 
 ### Step 4: Explore the API

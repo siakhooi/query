@@ -22,8 +22,8 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields) {
-        log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}", collection, filter, fields);
+    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields, String sort) {
+        log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}", collection, filter, fields, sort);
 
         List<Map<String, Object>> results = new ArrayList<>();
 
@@ -44,34 +44,34 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
                 projection = Document.parse(fields);
             }
 
-            // Execute query and convert to List<Map<String, Object>>
-            if (projection.isEmpty()) {
-                mongoCollection.find(bsonFilter).forEach(doc -> {
-                    Map<String, Object> row = new HashMap<>();
-                    doc.forEach((key, value) -> {
-                        // Convert ObjectId to String for JSON serialization
-                        if (value instanceof org.bson.types.ObjectId) {
-                            row.put(key, value.toString());
-                        } else {
-                            row.put(key, value);
-                        }
-                    });
-                    results.add(row);
-                });
-            } else {
-                mongoCollection.find(bsonFilter).projection(projection).forEach(doc -> {
-                    Map<String, Object> row = new HashMap<>();
-                    doc.forEach((key, value) -> {
-                        // Convert ObjectId to String for JSON serialization
-                        if (value instanceof org.bson.types.ObjectId) {
-                            row.put(key, value.toString());
-                        } else {
-                            row.put(key, value);
-                        }
-                    });
-                    results.add(row);
-                });
+            Document bsonSort = new Document();
+            if (sort != null && !sort.isBlank()) {
+                bsonSort = Document.parse(sort);
             }
+
+            // Execute query and convert to List<Map<String, Object>>
+            var findIterable = mongoCollection.find(bsonFilter);
+
+            if (!projection.isEmpty()) {
+                findIterable = findIterable.projection(projection);
+            }
+
+            if (!bsonSort.isEmpty()) {
+                findIterable = findIterable.sort(bsonSort);
+            }
+
+            findIterable.forEach(doc -> {
+                Map<String, Object> row = new HashMap<>();
+                doc.forEach((key, value) -> {
+                    // Convert ObjectId to String for JSON serialization
+                    if (value instanceof org.bson.types.ObjectId) {
+                        row.put(key, value.toString());
+                    } else {
+                        row.put(key, value);
+                    }
+                });
+                results.add(row);
+            });
 
             log.debug("Query returned {} documents", results.size());
 

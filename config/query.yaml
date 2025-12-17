@@ -53,6 +53,32 @@ query:
           filter: '{"genre":"Fiction"}'
           fields: '{"title": 1, "author": 1, "published": 1, "year": 1}'
 
+    # Sort by title ascending
+    - name: books-sorted-by-title
+      queries:
+        - name: books-sorted
+          connection: bookdb
+          collection: books
+          sort: '{"title": 1}'
+
+    # Sort by year descending, then title ascending
+    - name: books-sorted-multi
+      queries:
+        - name: books-by-year
+          connection: bookdb
+          collection: books
+          sort: '{"year": -1, "title": 1}'
+
+    # Combined with filter and fields
+    - name: books-fiction-sorted
+      queries:
+        - name: fiction-sorted
+          connection: bookdb
+          collection: books
+          filter: '{"genre":"Fiction"}'
+          fields: '{"title": 1, "author": 1, "year": 1}'
+          sort: '{"year": -1}'
+
     # Filtered fruit queries by colorW
     - name: fruits-color
       queries:
