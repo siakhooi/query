@@ -16,7 +16,7 @@ public class JdbcDatasourceConnection implements DatasourceConnection {
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields, String sort) {
+    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields, String sort, String pipeline) {
         log.debug("Executing JDBC query: {}", queryString);
         return jdbcTemplate.queryForList(queryString);
     }

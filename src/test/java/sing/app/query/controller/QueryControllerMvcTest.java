@@ -40,7 +40,7 @@ class QueryControllerMvcTest {
         DatasourceConnection dc=mock(DatasourceConnection.class);
         when(dcs.getConnection(any())).thenReturn(dc);
         List<Map<String, Object>> result=new ArrayList<>();
-        when(dc.execute(any(), any(), any(), any(), any())).thenReturn(result);
+        when(dc.execute(any(), any(), any(), any(), any(), any())).thenReturn(result);
     }
 
     @Test

@@ -52,6 +52,8 @@ curl http://localhost:8080/query/books-selected-fields | jq
 curl http://localhost:8080/query/books-sorted-by-title | jq
 curl http://localhost:8080/query/books-sorted-multi | jq
 curl http://localhost:8080/query/books-fiction-sorted | jq
+curl http://localhost:8080/query/books-aggregation | jq
+
 ```
 
 ### Step 4: Explore the API
@@ -134,10 +136,58 @@ curl http://localhost:8080/query/fruits-color | jq
 # Get statistics
 curl http://localhost:8080/query/statistics | jq
 
+# MongoDB aggregation pipelines
+curl http://localhost:8080/query/books-aggregation | jq
+
 # View configuration
 curl http://localhost:8080/config/datasource | jq
 curl http://localhost:8080/config/query | jq
 ```
+
+## MongoDB Aggregation Pipelines
+
+The Query microservice supports MongoDB aggregation pipelines, which can be combined with filter, fields, and sort parameters for powerful data processing.
+
+### Configuration Example
+
+```yaml
+query:
+  querysets:
+    - name: books
+      queries:
+        # Simple aggregation pipeline
+        - name: books-by-genre
+          collection: books
+          pipeline: |
+            [
+              {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
+              {"$sort": {"count": -1}}
+            ]
+          connection: mongodb1
+
+        # Combined: filter + pipeline + fields + sort
+        - name: popular-genres
+          collection: books
+          filter: '{"published": {"$gte": 2000}}'
+          pipeline: |
+            [
+              {"$group": {"_id": "$genre", "count": {"$sum": 1}, "avgPrice": {"$avg": "$price"}}},
+              {"$match": {"count": {"$gt": 5}}}
+            ]
+          fields: '{"_id": 1, "count": 1, "avgPrice": 1}'
+          sort: '{"count": -1}'
+          connection: mongodb1
+```
+
+### Pipeline Execution Order
+
+When combining parameters, stages are executed in this order:
+1. **$match** (from `filter`) - Filters documents early
+2. **Custom pipeline stages** (from `pipeline`) - Your aggregation logic
+3. **$project** (from `fields`) - Selects output fields
+4. **$sort** (from `sort`) - Orders final results
+
+This allows for maximum flexibility without needing to deduplicate stages.
 
 ## Next Steps
 

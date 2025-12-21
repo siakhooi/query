@@ -104,3 +104,50 @@ query:
         - name: animals-by-diet
           connection: animaldb
           queryString: SELECT diet, COUNT(*) as count FROM animals GROUP BY diet ORDER BY count DESC
+
+    # MongoDB Aggregation Pipeline Examples
+    - name: books-aggregation
+      queries:
+        # Simple aggregation - group books by genre
+        - name: books-by-genre
+          connection: bookdb
+          collection: books
+          pipeline: |
+            [
+              {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
+              {"$sort": {"count": -1}}
+            ]
+
+        # Aggregation with filter - only books published after 1950
+        - name: recent-books-by-genre
+          connection: bookdb
+          collection: books
+          filter: '{"year": {"$gte": 1950}}'
+          pipeline: |
+            [
+              {"$group": {"_id": "$genre", "count": {"$sum": 1}, "avgYear": {"$avg": "$year"}}},
+              {"$sort": {"count": -1}}
+            ]
+
+        # Combined: filter + pipeline + fields + sort
+        - name: popular-genres
+          connection: bookdb
+          collection: books
+          filter: '{"year": {"$gte": 1900}}'
+          pipeline: |
+            [
+              {"$group": {"_id": "$genre", "count": {"$sum": 1}, "avgYear": {"$avg": "$year"}}},
+              {"$match": {"count": {"$gte": 2}}}
+            ]
+          fields: '{"_id": 1, "count": 1, "avgYear": 1}'
+          sort: '{"count": -1}'
+
+        # Group by author with book count
+        - name: books-by-author
+          connection: bookdb
+          collection: books
+          pipeline: |
+            [
+              {"$group": {"_id": "$author", "bookCount": {"$sum": 1}, "genres": {"$addToSet": "$genre"}}},
+              {"$sort": {"bookCount": -1}}
+            ]

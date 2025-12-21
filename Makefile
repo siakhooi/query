@@ -17,11 +17,11 @@ help:
 # make curl-env
 
 
-all: clean setversion build docker-build helm-build
+all: setversion build docker-build helm-build
 
 clean:
 	mvn clean
-	rm -f query-*.tgz query-release-1.chart.yaml query-*.jar
+	rm -f query-*.tgz query-release-1.chart.yaml query-*.jar *.log
 setversion:
 	bin/update-versions.sh
 build:

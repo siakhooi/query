@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bson.BsonArray;
+import org.bson.BsonValue;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -22,8 +25,10 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields, String sort) {
-        log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}", collection, filter, fields, sort);
+    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields,
+            String sort, String pipeline) {
+        log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}, pipeline: {}",
+                collection, filter, fields, sort, pipeline);
 
         List<Map<String, Object>> results = new ArrayList<>();
 
@@ -34,44 +39,65 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
             }
             MongoCollection<Document> mongoCollection = database.getCollection(collection);
 
-            Document bsonFilter = new Document();
-            if (filter != null && !filter.isBlank()) {
-                bsonFilter = Document.parse(filter);
-            }
+            // Check if we need to use aggregation pipeline
+            boolean hasPipeline = pipeline != null && !pipeline.isBlank();
+            boolean hasFilter = filter != null && !filter.isBlank();
+            boolean hasFields = fields != null && !fields.isBlank();
+            boolean hasSort = sort != null && !sort.isBlank();
 
-            Document projection = new Document();
-            if (fields != null && !fields.isBlank()) {
-                projection = Document.parse(fields);
-            }
+            if (hasPipeline || hasFilter || hasFields || hasSort) {
+                // Build combined aggregation pipeline
+                List<Document> stages = new ArrayList<>();
 
-            Document bsonSort = new Document();
-            if (sort != null && !sort.isBlank()) {
-                bsonSort = Document.parse(sort);
-            }
+                // 1. Add filter as $match stage
+                if (hasFilter) {
+                    stages.add(new Document("$match", Document.parse(filter)));
+                }
 
-            // Execute query and convert to List<Map<String, Object>>
-            var findIterable = mongoCollection.find(bsonFilter);
+                // 2. Add custom pipeline stages
+                if (hasPipeline) {
+                    List<Document> customStages = parsePipelineArray(pipeline);
+                    stages.addAll(customStages);
+                }
 
-            if (!projection.isEmpty()) {
-                findIterable = findIterable.projection(projection);
-            }
+                // 3. Add fields as $project stage
+                if (hasFields) {
+                    stages.add(new Document("$project", Document.parse(fields)));
+                }
 
-            if (!bsonSort.isEmpty()) {
-                findIterable = findIterable.sort(bsonSort);
-            }
+                // 4. Add sort as $sort stage
+                if (hasSort) {
+                    stages.add(new Document("$sort", Document.parse(sort)));
+                }
 
-            findIterable.forEach(doc -> {
-                Map<String, Object> row = new HashMap<>();
-                doc.forEach((key, value) -> {
-                    // Convert ObjectId to String for JSON serialization
-                    if (value instanceof org.bson.types.ObjectId) {
-                        row.put(key, value.toString());
-                    } else {
-                        row.put(key, value);
-                    }
+                // Execute aggregation pipeline
+                mongoCollection.aggregate(stages).forEach(doc -> {
+                    Map<String, Object> row = new HashMap<>();
+                    doc.forEach((key, value) -> {
+                        // Convert ObjectId to String for JSON serialization
+                        if (value instanceof ObjectId) {
+                            row.put(key, value.toString());
+                        } else {
+                            row.put(key, value);
+                        }
+                    });
+                    results.add(row);
                 });
-                results.add(row);
-            });
+            } else {
+                // Use simple find query for backward compatibility
+                mongoCollection.find().forEach(doc -> {
+                    Map<String, Object> row = new HashMap<>();
+                    doc.forEach((key, value) -> {
+                        // Convert ObjectId to String for JSON serialization
+                        if (value instanceof ObjectId) {
+                            row.put(key, value.toString());
+                        } else {
+                            row.put(key, value);
+                        }
+                    });
+                    results.add(row);
+                });
+            }
 
             log.debug("Query returned {} documents", results.size());
 
@@ -81,5 +107,15 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
         }
 
         return results;
+    }
+
+    private List<Document> parsePipelineArray(String pipeline) {
+        List<Document> stages = new ArrayList<>();
+        // Parse the pipeline string as a JSON array
+        BsonArray bsonArray = BsonArray.parse(pipeline);
+        for (BsonValue value : bsonArray) {
+            stages.add(Document.parse(value.asDocument().toJson()));
+        }
+        return stages;
     }
 }

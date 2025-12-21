@@ -60,6 +60,9 @@ public class QueryConfig {
         @JsonIgnore
         private String sort;
 
+        @JsonIgnore
+        private String pipeline;
+
         @NotBlank
         @JsonInclude(Include.NON_NULL)
         private String connection;
