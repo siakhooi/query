@@ -12,6 +12,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import lombok.extern.slf4j.Slf4j;
+import sing.app.query.config.MongoQuery;
 
 @Slf4j
 public class MongodbDatasourceConnection implements DatasourceConnection {
@@ -25,8 +26,13 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields,
-            String sort, String pipeline) {
+    public List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery) {
+        String collection = mongoQuery != null ? mongoQuery.getCollection() : null;
+        String filter = mongoQuery != null ? mongoQuery.getFilter() : null;
+        String fields = mongoQuery != null ? mongoQuery.getFields() : null;
+        String sort = mongoQuery != null ? mongoQuery.getSort() : null;
+        String pipeline = mongoQuery != null ? mongoQuery.getPipeline() : null;
+
         log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}, pipeline: {}",
                 collection, filter, fields, sort, pipeline);
 

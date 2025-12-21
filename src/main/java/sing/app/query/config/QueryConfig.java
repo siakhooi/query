@@ -48,20 +48,7 @@ public class QueryConfig {
         @JsonIgnore
         private String queryString;
 
-        @JsonIgnore
-        private String collection;
-
-        @JsonIgnore
-        private String filter;
-
-        @JsonIgnore
-        private String fields;
-
-        @JsonIgnore
-        private String sort;
-
-        @JsonIgnore
-        private String pipeline;
+        private MongoQuery mongoQuery;
 
         @NotBlank
         @JsonInclude(Include.NON_NULL)

@@ -49,7 +49,7 @@ class JdbcDatasourceConnectionTest {
 
         when(mockJdbcTemplate.queryForList(query)).thenReturn(expected);
 
-        List<Map<String, Object>> result = connection.execute(query, null, null, null, null, null);
+        List<Map<String, Object>> result = connection.execute(query, null);
 
         assertEquals(expected, result);
         verify(mockJdbcTemplate, times(1)).queryForList(query);
@@ -60,7 +60,7 @@ class JdbcDatasourceConnectionTest {
         String query = "SELECT * FROM empty_table";
         when(mockJdbcTemplate.queryForList(query)).thenReturn(Collections.emptyList());
 
-        List<Map<String, Object>> result = connection.execute(query, null, null, null, null, null);
+        List<Map<String, Object>> result = connection.execute(query, null);
 
         assertTrue(result.isEmpty());
         verify(mockJdbcTemplate).queryForList(query);
@@ -71,7 +71,7 @@ class JdbcDatasourceConnectionTest {
         String query = "SELECT * FROM invalid";
         when(mockJdbcTemplate.queryForList(query)).thenThrow(new RuntimeException("DB error"));
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query, null, null, null, null, null));
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> connection.execute(query, null));
         assertEquals("DB error", thrown.getMessage());
         verify(mockJdbcTemplate).queryForList(query);
     }

@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
+import sing.app.query.config.MongoQuery;
 
 @Slf4j
 public class JdbcDatasourceConnection implements DatasourceConnection {
@@ -16,7 +17,7 @@ public class JdbcDatasourceConnection implements DatasourceConnection {
     }
 
     @Override
-    public List<Map<String, Object>> execute(String queryString, String collection, String filter, String fields, String sort, String pipeline) {
+    public List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery) {
         log.debug("Executing JDBC query: {}", queryString);
         return jdbcTemplate.queryForList(queryString);
     }

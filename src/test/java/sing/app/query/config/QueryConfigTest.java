@@ -67,13 +67,17 @@ class QueryConfigTest {
         QueryConfig.Query q = new QueryConfig.Query();
         q.setName("testquery");
         q.setQueryString("SELECT 1");
-        q.setCollection("books");
-        q.setFilter("{\"genre\":\"Fiction\"}");
         q.setConnection("testconn");
+
+        MongoQuery mongoQuery = new MongoQuery();
+        mongoQuery.setCollection("books");
+        mongoQuery.setFilter("{\"genre\":\"Fiction\"}");
+        q.setMongoQuery(mongoQuery);
+
         assertEquals("testquery", q.getName());
         assertEquals("SELECT 1", q.getQueryString());
-        assertEquals("books", q.getCollection());
-        assertEquals("{\"genre\":\"Fiction\"}", q.getFilter());
+        assertEquals("books", q.getMongoQuery().getCollection());
+        assertEquals("{\"genre\":\"Fiction\"}", q.getMongoQuery().getFilter());
         assertEquals("testconn", q.getConnection());
     }
 
