@@ -33,26 +33,24 @@ curl http://localhost:8080/actuator/health
 
 # Query fruits
 curl http://localhost:8080/query/fruits | jq
+curl http://localhost:8080/query/fruits-color | jq
 
 # Query animals
 curl http://localhost:8080/query/animals | jq
 
 # Query books
 curl http://localhost:8080/query/books | jq
-
-# Get combined results
-curl http://localhost:8080/query/all | jq
-
-curl http://localhost:8080/query/statistics | jq
-
-curl http://localhost:8080/query/fruits-color | jq
-
 curl http://localhost:8080/query/books-fiction | jq
 curl http://localhost:8080/query/books-selected-fields | jq
 curl http://localhost:8080/query/books-sorted-by-title | jq
 curl http://localhost:8080/query/books-sorted-multi | jq
 curl http://localhost:8080/query/books-fiction-sorted | jq
 curl http://localhost:8080/query/books-aggregation | jq
+
+# Get combined results
+curl http://localhost:8080/query/all | jq
+
+curl http://localhost:8080/query/statistics | jq
 
 ```
 
@@ -118,31 +116,7 @@ curl http://localhost:8080/actuator/health
 
 ## Sample Endpoints
 
-Once the service is running, try these endpoints:
-
-```bash
-# Get all fruits (from MariaDB)
-curl http://localhost:8080/query/fruits | jq
-
-# Get all animals (from PostgreSQL)
-curl http://localhost:8080/query/animals | jq
-
-# Get combined data from both databases
-curl http://localhost:8080/query/all | jq
-
-# Get filtered fruits by color
-curl http://localhost:8080/query/fruits-color | jq
-
-# Get statistics
-curl http://localhost:8080/query/statistics | jq
-
-# MongoDB aggregation pipelines
-curl http://localhost:8080/query/books-aggregation | jq
-
-# View configuration
-curl http://localhost:8080/config/datasource | jq
-curl http://localhost:8080/config/query | jq
-```
+Once the service is running, Refer Step 3 in Docker Compose for the available endpoints
 
 ## MongoDB Aggregation Pipelines
 
