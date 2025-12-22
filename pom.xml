@@ -20,7 +20,7 @@
 		<spring-cloud.version>2025.1.0-RC1</spring-cloud.version>
 		<springdoc-openapi.version>3.0.0</springdoc-openapi.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
-		<mariadb-jdbc.version>3.5.6</mariadb-jdbc.version>
+		<mariadb-jdbc.version>3.5.7</mariadb-jdbc.version>
 		<postgresql-jdbc.version>42.7.8</postgresql-jdbc.version>
 	    <sonar.organization>siakhooi</sonar.organization>
 	</properties>
