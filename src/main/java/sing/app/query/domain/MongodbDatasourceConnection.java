@@ -27,92 +27,103 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
 
     @Override
     public List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery) {
-        String collection = mongoQuery != null ? mongoQuery.getCollection() : null;
-        String filter = mongoQuery != null ? mongoQuery.getFilter() : null;
-        String fields = mongoQuery != null ? mongoQuery.getFields() : null;
-        String sort = mongoQuery != null ? mongoQuery.getSort() : null;
-        String pipeline = mongoQuery != null ? mongoQuery.getPipeline() : null;
-
-        log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}, pipeline: {}",
-                collection, filter, fields, sort, pipeline);
-
-        List<Map<String, Object>> results = new ArrayList<>();
+        logQueryExecution(mongoQuery);
 
         try {
             MongoDatabase database = mongoClient.getDatabase(databaseName);
-            if (collection == null || collection.isBlank()) {
-                throw new IllegalArgumentException("MongoDB query requires 'collection'");
-            }
+            String collection = getCollection(mongoQuery);
+            validateCollection(collection);
             MongoCollection<Document> mongoCollection = database.getCollection(collection);
 
-            // Check if we need to use aggregation pipeline
-            boolean hasPipeline = pipeline != null && !pipeline.isBlank();
-            boolean hasFilter = filter != null && !filter.isBlank();
-            boolean hasFields = fields != null && !fields.isBlank();
-            boolean hasSort = sort != null && !sort.isBlank();
-
-            if (hasPipeline || hasFilter || hasFields || hasSort) {
-                // Build combined aggregation pipeline
-                List<Document> stages = new ArrayList<>();
-
-                // 1. Add filter as $match stage
-                if (hasFilter) {
-                    stages.add(new Document("$match", Document.parse(filter)));
-                }
-
-                // 2. Add custom pipeline stages
-                if (hasPipeline) {
-                    List<Document> customStages = parsePipelineArray(pipeline);
-                    stages.addAll(customStages);
-                }
-
-                // 3. Add fields as $project stage
-                if (hasFields) {
-                    stages.add(new Document("$project", Document.parse(fields)));
-                }
-
-                // 4. Add sort as $sort stage
-                if (hasSort) {
-                    stages.add(new Document("$sort", Document.parse(sort)));
-                }
-
-                // Execute aggregation pipeline
-                mongoCollection.aggregate(stages).forEach(doc -> {
-                    Map<String, Object> row = new HashMap<>();
-                    doc.forEach((key, value) -> {
-                        // Convert ObjectId to String for JSON serialization
-                        if (value instanceof ObjectId) {
-                            row.put(key, value.toString());
-                        } else {
-                            row.put(key, value);
-                        }
-                    });
-                    results.add(row);
-                });
-            } else {
-                // Use simple find query for backward compatibility
-                mongoCollection.find().forEach(doc -> {
-                    Map<String, Object> row = new HashMap<>();
-                    doc.forEach((key, value) -> {
-                        // Convert ObjectId to String for JSON serialization
-                        if (value instanceof ObjectId) {
-                            row.put(key, value.toString());
-                        } else {
-                            row.put(key, value);
-                        }
-                    });
-                    results.add(row);
-                });
-            }
+            List<Map<String, Object>> results = shouldUseAggregation(mongoQuery)
+                    ? executeAggregation(mongoCollection, mongoQuery)
+                    : executeSimpleFind(mongoCollection);
 
             log.debug("Query returned {} documents", results.size());
+            return results;
 
         } catch (Exception e) {
             log.error("Error executing MongoDB query: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to execute MongoDB query: " + e.getMessage(), e);
         }
+    }
 
+    private String getCollection(MongoQuery mongoQuery) {
+        return mongoQuery != null ? mongoQuery.getCollection() : null;
+    }
+
+    private void logQueryExecution(MongoQuery mongoQuery) {
+        if (mongoQuery != null) {
+            log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}, pipeline: {}",
+                    mongoQuery.getCollection(), mongoQuery.getFilter(), mongoQuery.getFields(),
+                    mongoQuery.getSort(), mongoQuery.getPipeline());
+        }
+    }
+
+    private void validateCollection(String collection) {
+        if (collection == null || collection.isBlank()) {
+            throw new IllegalArgumentException("MongoDB query requires 'collection'");
+        }
+    }
+
+    private boolean shouldUseAggregation(MongoQuery mongoQuery) {
+        if (mongoQuery == null) {
+            return false;
+        }
+        return isNotBlank(mongoQuery.getPipeline()) || isNotBlank(mongoQuery.getFilter())
+                || isNotBlank(mongoQuery.getFields()) || isNotBlank(mongoQuery.getSort());
+    }
+
+    private boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
+    }
+
+    private List<Map<String, Object>> executeAggregation(MongoCollection<Document> mongoCollection,
+                                                          MongoQuery mongoQuery) {
+        List<Document> stages = buildAggregationPipeline(mongoQuery);
+        List<Map<String, Object>> results = new ArrayList<>();
+        mongoCollection.aggregate(stages).forEach(doc -> results.add(convertDocumentToMap(doc)));
         return results;
+    }
+
+    private List<Map<String, Object>> executeSimpleFind(MongoCollection<Document> mongoCollection) {
+        List<Map<String, Object>> results = new ArrayList<>();
+        mongoCollection.find().forEach(doc -> results.add(convertDocumentToMap(doc)));
+        return results;
+    }
+
+    private List<Document> buildAggregationPipeline(MongoQuery mongoQuery) {
+        List<Document> stages = new ArrayList<>();
+
+        if (isNotBlank(mongoQuery.getFilter())) {
+            stages.add(new Document("$match", Document.parse(mongoQuery.getFilter())));
+        }
+
+        if (isNotBlank(mongoQuery.getPipeline())) {
+            stages.addAll(parsePipelineArray(mongoQuery.getPipeline()));
+        }
+
+        if (isNotBlank(mongoQuery.getFields())) {
+            stages.add(new Document("$project", Document.parse(mongoQuery.getFields())));
+        }
+
+        if (isNotBlank(mongoQuery.getSort())) {
+            stages.add(new Document("$sort", Document.parse(mongoQuery.getSort())));
+        }
+
+        return stages;
+    }
+
+    private Map<String, Object> convertDocumentToMap(Document doc) {
+        Map<String, Object> row = new HashMap<>();
+        doc.forEach((key, value) -> {
+            if (value instanceof ObjectId) {
+                row.put(key, value.toString());
+            } else {
+                row.put(key, value);
+            }
+        });
+        return row;
     }
 
     private List<Document> parsePipelineArray(String pipeline) {
