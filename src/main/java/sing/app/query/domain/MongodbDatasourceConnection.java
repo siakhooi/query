@@ -8,6 +8,7 @@ import org.bson.BsonArray;
 import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -42,9 +43,15 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
             log.debug("Query returned {} documents", results.size());
             return results;
 
-        } catch (Exception e) {
-            log.error("Error executing MongoDB query: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to execute MongoDB query: " + e.getMessage(), e);
+        } catch (MongoException e) {
+            log.error("MongoDB driver error executing query: {}", e.getMessage(), e);
+            throw new MongoQueryExecutionException("Failed to execute MongoDB query: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid MongoDB query configuration: {}", e.getMessage(), e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error executing MongoDB query: {}", e.getMessage(), e);
+            throw new MongoQueryExecutionException("Unexpected failure during MongoDB query execution", e);
         }
     }
 

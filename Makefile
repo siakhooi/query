@@ -23,11 +23,11 @@ clean:
 	mvn clean
 	rm -f query-*.tgz query-release-1.chart.yaml query-*.jar *.log
 setversion:
-	bin/update-versions.sh
+	bin/update-versions.sh 2>&1 | tee setversion.log
 build:
-	mvn -U verify
+	bin/build.sh 2>&1 | tee build.log
 docker-build:
-	bin/docker-build.sh
+	bin/docker-build.sh 2>&1 | tee docker-build.log
 commit:
 	bin/git-commit-and-push.sh
 release:
