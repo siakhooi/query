@@ -33,24 +33,28 @@ query:
       queries:
         - name: books
           connection: bookdb
-          collection: books
+          mongoQuery:
+            collection: books
     - name: books-fiction
       queries:
         - name: books-fiction
           connection: bookdb
-          collection: books
-          filter: '{"genre":"Fiction"}'
+          mongoQuery:
+            collection: books
+            filter: '{"genre":"Fiction"}'
     - name: books-selected-fields
       queries:
         - name: books-title-author
           connection: bookdb
-          collection: books
-          fields: '{"title": 1, "author": 1, "_id": 0}'
+          mongoQuery:
+            collection: books
+            fields: '{"title": 1, "author": 1, "_id": 0}'
         - name: books-fiction-selected
           connection: bookdb
-          collection: books
-          filter: '{"genre":"Fiction"}'
-          fields: '{"title": 1, "author": 1, "published": 1, "year": 1}'
+          mongoQuery:
+            collection: books
+            filter: '{"genre":"Fiction"}'
+            fields: '{"title": 1, "author": 1, "published": 1, "year": 1}'
     - name: combined
       queries:
         - name: fruits
@@ -61,4 +65,5 @@ query:
           queryString: SELECT name, species, age, habitat, diet FROM animals
         - name: books
           connection: bookdb
-          collection: books
+          mongoQuery:
+            collection: books

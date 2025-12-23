@@ -131,25 +131,27 @@ query:
       queries:
         # Simple aggregation pipeline
         - name: books-by-genre
-          collection: books
-          pipeline: |
-            [
-              {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
-              {"$sort": {"count": -1}}
-            ]
+          mongoQuery:
+            collection: books
+            pipeline: |
+              [
+                {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}}
+              ]
           connection: mongodb1
 
         # Combined: filter + pipeline + fields + sort
         - name: popular-genres
-          collection: books
-          filter: '{"published": {"$gte": 2000}}'
-          pipeline: |
-            [
-              {"$group": {"_id": "$genre", "count": {"$sum": 1}, "avgPrice": {"$avg": "$price"}}},
-              {"$match": {"count": {"$gt": 5}}}
-            ]
-          fields: '{"_id": 1, "count": 1, "avgPrice": 1}'
-          sort: '{"count": -1}'
+          mongoQuery:
+            collection: books
+            filter: '{"published": {"$gte": 2000}}'
+            pipeline: |
+              [
+                {"$group": {"_id": "$genre", "count": {"$sum": 1}, "avgPrice": {"$avg": "$price"}}},
+                {"$match": {"count": {"$gt": 5}}}
+              ]
+            fields: '{"_id": 1, "count": 1, "avgPrice": 1}'
+            sort: '{"count": -1}'
           connection: mongodb1
 ```
 

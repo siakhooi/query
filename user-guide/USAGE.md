@@ -458,7 +458,8 @@ query:
       queries:
         - name: books
           connection: bookdb
-          collection: books
+          mongoQuery:
+            collection: books
 
     # Filtered queries
     - name: fruits-color
@@ -475,8 +476,9 @@ query:
       queries:
         - name: books-fiction
           connection: bookdb
-          collection: books
-          filter: '{"genre":"Fiction"}'
+          mongoQuery:
+            collection: books
+            filter: '{"genre":"Fiction"}'
 
     # Combined queryset from JDBC and MongoDB
     - name: combined
@@ -489,7 +491,8 @@ query:
           queryString: SELECT name, species, age, habitat, diet FROM animals
         - name: books
           connection: bookdb
-          collection: books
+          mongoQuery:
+            collection: books
 ```
 
 ## Sample Data Setup
@@ -547,14 +550,25 @@ This creates:
 
 ### MongoDB Query Format
 
-MongoDB queries use explicit fields in `query.yaml`:
-- Basic query: `collection: collectionName`
-- Filtered query: `collection: collectionName` + `filter: '{"field":"value"}'`
+MongoDB queries use the nested `mongoQuery` object in `query.yaml`. Populate any combination of the following fields as needed:
+
+```yaml
+mongoQuery:
+  collection: books
+  filter: '{"genre":"Fiction"}'
+  fields: '{"title": 1, "author": 1, "_id": 0}'
+  sort: '{"year": -1}'
+  pipeline: |
+    [
+      {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
+      {"$match": {"count": {"$gte": 2}}}
+    ]
+```
 
 Examples:
-- `collection: books` - Get all books
-- `collection: books` + `filter: '{"genre":"Fiction"}'` - Get fiction books
-- `collection: books` + `filter: '{"year":{"$gt":2000}}'` - Get books published after 2000
+- `mongoQuery.collection: books` – get all books
+- `mongoQuery` with `collection` + `filter: '{"genre":"Fiction"}'` – get fiction books
+- `mongoQuery` with `collection` + `filter: '{"year":{"$gt":2000}}'` – get books published after 2000
 
 ## Testing the Service
 
