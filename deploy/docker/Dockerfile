@@ -11,10 +11,12 @@ LABEL org.opencontainers.image.base.name=21-jre-alpine
 LABEL org.opencontainers.image.base.digest=sha256:e7ed585b34913e0a780e0282330183a0ea14ad6b929362d02aea1156b43262bf
 LABEL org.opencontainers.image.version=0.16.0
 LABEL org.opencontainers.image.revision=0.17.0
-LABEL org.opencontainers.image.created="2025-12-22 05:32:48.816472689+00:00"
+LABEL org.opencontainers.image.created="2025-12-22 14:24:12.233859148+00:00"
 
 ARG APP_VERSION=0.16.0
 ARG JAR_NAME=query
+
+WORKDIR /app
 
 EXPOSE 8080
 
@@ -23,4 +25,4 @@ COPY --chown=root:root --chmod=644 ${JAR_NAME}-${APP_VERSION}.jar query.jar
 RUN addgroup -g 10001 group00 && adduser -D -u 10002 user00 group00
 USER user00:group00
 
-ENTRYPOINT ["java","-jar","/query.jar"]
+ENTRYPOINT ["java","-jar","/app/query.jar"]
