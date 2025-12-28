@@ -1,13 +1,23 @@
 package sing.app.query.service;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.datastax.oss.driver.api.core.CqlSession;
+
 import sing.app.query.config.DatasourceConfig.Connection;
+import sing.app.query.domain.CassandraDatasourceConnection;
 import sing.app.query.domain.DatasourceConnection;
 import sing.app.query.domain.JdbcDatasourceConnection;
 import sing.app.query.domain.MongodbDatasourceConnection;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class DatasourceConnectionServiceImplTest {
 
@@ -92,5 +102,52 @@ class DatasourceConnectionServiceImplTest {
         DatasourceConnection result2 = service.getConnection(conn2);
 
         assertNotSame(result1, result2);
+    }
+
+    @Test
+    void testGetConnectionCreatesNewCassandraConnection() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-test");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn("datacenter1");
+        when(mockConn.getKeyspace()).thenReturn("ks1");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn("pass");
+
+        CqlSession mockSession = mock(CqlSession.class);
+        DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
+
+        DatasourceConnection result = cassandraService.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof CassandraDatasourceConnection);
+    }
+
+    @Test
+    void testCassandraConnectionRequiresDatacenter() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-invalid");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn(null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.getConnection(mockConn));
+
+        assertTrue(ex.getMessage().contains("Datacenter"));
+    }
+
+    static class TestableDatasourceConnectionServiceImpl extends DatasourceConnectionServiceImpl {
+
+        private final CqlSession session;
+
+        TestableDatasourceConnectionServiceImpl(CqlSession session) {
+            this.session = session;
+        }
+
+        @Override
+        protected CqlSession buildCassandraSession(Connection connection) {
+            return session;
+        }
     }
 }

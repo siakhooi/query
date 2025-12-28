@@ -41,6 +41,7 @@ When using Docker Compose, use the service names as hostnames:
 - MariaDB: `mariadb:3306`
 - PostgreSQL: `postgres:5432`
 - MongoDB: `mongodb:27017`
+- Cassandra: `cassandra:9042`
 
 ### Local Development
 When running locally, use:
@@ -53,10 +54,11 @@ When deploying to Kubernetes with Helm, use Kubernetes service names:
 - MariaDB: `mariadb-service:3306`
 - PostgreSQL: `postgres-service:5432`
 - MongoDB: `mongodb-service:27017`
+- Cassandra: `cassandra-service:9042`
 
 ## Database Types
 
-The application supports two connection types:
+The application supports three connection types:
 
 ### JDBC Connections
 Used for relational databases (MariaDB, PostgreSQL, etc.)
@@ -69,3 +71,9 @@ Used for MongoDB databases
 - Type: `mongodb`
 - Queries are configured with explicit fields: `collection` and optional `filter`
 - Example: `collection: books` + `filter: '{"genre":"Fiction"}'`
+
+### Cassandra Connections
+Used for Cassandra/Scylla clusters
+- Type: `cassandra`
+- Requires `url`, `datacenter`, and optional `keyspace`, `username`, `password`
+- Uses `queryString` to issue CQL (e.g., `SELECT hostname, cpu_usage FROM metrics.cpu`)

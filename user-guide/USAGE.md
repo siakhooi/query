@@ -16,8 +16,8 @@ This guide provides detailed instructions on how to run the Query microservice u
 
 ## Overview
 
-Query is a microservice that queries backend databases (MariaDB, PostgreSQL, and MongoDB) and returns results as JSON. It provides:
-- Configurable data connections (JDBC and MongoDB)
+Query is a microservice that queries backend databases (MariaDB, PostgreSQL, MongoDB, and Cassandra) and returns results as JSON. It provides:
+- Configurable data connections (JDBC, MongoDB, and Cassandra)
 - Multiple query definitions
 - RESTful API endpoints
 - Ability to combine data from multiple database types
@@ -28,7 +28,7 @@ Query is a microservice that queries backend databases (MariaDB, PostgreSQL, and
 ### For Running JAR
 - Java 17 or higher
 - Maven 3.6+ (for building from source)
-- Access to MariaDB, PostgreSQL, and/or MongoDB databases
+- Access to MariaDB, PostgreSQL, MongoDB, and/or Cassandra databases
 
 ### For Running Docker
 - Docker 20.10+
@@ -38,7 +38,7 @@ Query is a microservice that queries backend databases (MariaDB, PostgreSQL, and
 - Docker Compose v2.0+
 
 ### For Running Helm Chart
-- Kubernetes cluster (1.19+)
+- Kubernetes cluster (1.20+)
 - Helm 3.0+
 - kubectl configured to access your cluster
 
@@ -423,6 +423,15 @@ datasource:
       database: "bookdb"
       username: "bookuser"
       password: "bookpass"
+
+    # Cassandra example
+    - name: "cassandradb"
+      type: "cassandra"
+      url: "cassandra://localhost:9042"
+      datacenter: "datacenter1"
+      keyspace: "metrics"
+      username: "cassuser"
+      password: "casspass"
 ```
 
 ### Query Definitions (query.yaml)
@@ -460,6 +469,9 @@ query:
           connection: bookdb
           mongoQuery:
             collection: books
+        - name: metrics
+          connection: cassandradb
+          queryString: SELECT hostname, cpu_usage, recorded_at FROM metrics.cpu LIMIT 10
 
     # Filtered queries
     - name: fruits-color
@@ -480,7 +492,14 @@ query:
             collection: books
             filter: '{"genre":"Fiction"}'
 
-    # Combined queryset from JDBC and MongoDB
+    # Cassandra metrics queries
+    - name: metrics
+      queries:
+        - name: cpu-metrics
+          connection: cassandradb
+          queryString: SELECT hostname, cpu_usage, recorded_at FROM metrics.cpu LIMIT 25
+
+    # Combined queryset from JDBC and MongoDB (and optionally Cassandra)
     - name: combined
       queries:
         - name: fruits
@@ -548,6 +567,26 @@ This creates:
 - User: `bookuser` with password `bookpass`
 - Collection: `books` with 10 sample book records
 
+### Cassandra - Metrics Keyspace
+
+The `sample/cassandra.cql` file contains the schema and sample CPU metrics data.
+
+```bash
+# If using Docker Compose (automatically executed by cassandra-init, rerun manually if needed)
+docker-compose exec cassandra cqlsh -f /tmp/cassandra.cql
+
+# If using docker-compose outside user-guide, point to sample file
+docker-compose exec cassandra cqlsh -f ../sample/cassandra.cql
+
+# If using local Cassandra
+cqlsh -f sample/cassandra.cql
+```
+
+This creates:
+- Keyspace: `metrics`
+- Table: `metrics.cpu`
+- Sample rows for hosts like `app-server-1`, `worker-01`, etc.
+
 ### MongoDB Query Format
 
 MongoDB queries use the nested `mongoQuery` object in `query.yaml`. Populate any combination of the following fields as needed:
@@ -587,7 +626,10 @@ curl http://localhost:8080/query/fruits | jq
 # Get all animals
 curl http://localhost:8080/query/animals | jq
 
-# Get combined results (fruits and animals)
+# Get Cassandra metrics
+curl http://localhost:8080/query/metrics | jq
+
+# Get combined results (fruits, animals, books, metrics)
 curl http://localhost:8080/query/all | jq
 
 # Get all books (MongoDB)

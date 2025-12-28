@@ -38,9 +38,11 @@ user-guide/
 ├── datasource.yaml        # Database connections
 └── query.yaml             # Query definitions
 
-../sample/                 # Sample SQL data
+../sample/                 # Sample seed data
 ├── fruit.sql              # MariaDB sample data
-└── animal.sql             # PostgreSQL sample data
+├── animal.sql             # PostgreSQL sample data
+├── book.js                # MongoDB sample data
+└── cassandra.cql          # Cassandra metrics sample data
 ```
 
 ## What You'll Find Here

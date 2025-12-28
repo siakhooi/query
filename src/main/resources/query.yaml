@@ -67,3 +67,9 @@ query:
           connection: bookdb
           mongoQuery:
             collection: books
+
+    - name: metrics
+      queries:
+        - name: cpu-metrics
+          connection: cassandradb
+          queryString: SELECT hostname, cpu_usage, recorded_at FROM metrics.cpu LIMIT 25

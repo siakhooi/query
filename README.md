@@ -6,6 +6,7 @@ microservice to query backend databases
   - mariadb
   - postgresql
   - mongodb
+  - cassandra
 
 ## Documentation
 

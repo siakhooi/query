@@ -1,7 +1,8 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+
+set -euxo pipefail
 
 # shellcheck disable=SC1091
 . ./release.env
 
-mvn verify
+mvn -U verify 2>&1 | tee build.log

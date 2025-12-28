@@ -64,6 +64,41 @@ services:
     networks:
       - query-network
 
+  # Cassandra for metrics keyspace
+  cassandra:
+    image: cassandra:5
+    container_name: query-cassandra
+    environment:
+      CASSANDRA_CLUSTER_NAME: query-cluster
+      CASSANDRA_DC: datacenter1
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 100M
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e \"DESCRIBE CLUSTER\""]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    networks:
+      - query-network
+
+  # Runs once to seed Cassandra sample data
+  cassandra-init:
+    image: cassandra:5
+    container_name: query-cassandra-init
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ../sample/cassandra.cql:/tmp/cassandra.cql:ro
+    entrypoint: ["/bin/bash", "-c", "until cqlsh cassandra 9042 -e 'DESCRIBE CLUSTER'; do sleep 5; done && cqlsh cassandra 9042 -f /tmp/cassandra.cql"]
+    networks:
+      - query-network
+
   # Query microservice
   query:
     image: siakhooi/query:latest
@@ -81,6 +116,10 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+      cassandra:
+        condition: service_healthy
+      cassandra-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -97,6 +136,8 @@ volumes:
   postgres_data:
     driver: local
   mongodb_data:
+    driver: local
+  cassandra_data:
     driver: local
 
 networks:

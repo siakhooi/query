@@ -50,6 +50,13 @@ public class DatasourceConfig {
         @JsonInclude(Include.NON_NULL)
         private String database;
 
+        // Cassandra specific properties
+        @JsonInclude(Include.NON_NULL)
+        private String datacenter;
+
+        @JsonInclude(Include.NON_NULL)
+        private String keyspace;
+
         // HikariCP pool configuration properties
         @JsonInclude(Include.NON_NULL)
         private Integer maximumPoolSize;

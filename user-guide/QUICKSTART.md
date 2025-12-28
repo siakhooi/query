@@ -23,6 +23,7 @@ This will start:
 - MariaDB with sample fruit data
 - PostgreSQL with sample animal data
 - MongoDB with sample book data
+- Cassandra with sample metrics data
 - Query microservice on port 8080
 
 ### Step 3: Test the Service
@@ -46,6 +47,9 @@ curl http://localhost:8080/query/books-sorted-by-title | jq
 curl http://localhost:8080/query/books-sorted-multi | jq
 curl http://localhost:8080/query/books-fiction-sorted | jq
 curl http://localhost:8080/query/books-aggregation | jq
+
+# Query Cassandra metrics
+curl http://localhost:8080/query/metrics | jq
 
 # Get combined results
 curl http://localhost:8080/query/all | jq

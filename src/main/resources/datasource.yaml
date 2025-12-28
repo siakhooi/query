@@ -31,3 +31,11 @@ datasource:
       database: "bookdb"
       username: "bookuser"
       password: "bookpass"
+
+    - name: "cassandradb"
+      type: "cassandra"
+      url: "cassandra://localhost:9042"
+      datacenter: "datacenter1"
+      keyspace: "metrics"
+      username: "cassuser"
+      password: "casspass"

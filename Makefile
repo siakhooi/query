@@ -20,14 +20,14 @@ help:
 all: setversion build docker-build helm-build
 
 clean:
-	mvn clean
-	rm -f query-*.tgz query-release-1.chart.yaml query-*.jar *.log
+# 	mvn clean
+	rm -rf target query-*.tgz query-release-1.chart.yaml query-*.jar *.log
 setversion:
-	bin/update-versions.sh 2>&1 | tee setversion.log
+	bin/update-versions.sh
 build:
-	bin/build.sh 2>&1 | tee build.log
+	bin/build.sh
 docker-build:
-	bin/docker-build.sh 2>&1 | tee docker-build.log
+	bin/docker-build.sh
 commit:
 	bin/git-commit-and-push.sh
 release:

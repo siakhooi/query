@@ -31,3 +31,12 @@ datasource:
       database: "bookdb"
       username: "bookuser"
       password: "bookpass"
+
+    # Cassandra connection for metrics keyspace
+    - name: "cassandradb"
+      type: "cassandra"
+      url: "cassandra://cassandra:9042"
+      datacenter: "datacenter1"
+      keyspace: "metrics"
+      username: "cassuser"
+      password: "casspass"
