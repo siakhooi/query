@@ -23,6 +23,15 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
 
     private final CqlSession session;
 
+    /**
+     * Executes a Cassandra CQL query and returns the results.
+     *
+     * @param queryString the CQL query to execute
+     * @param mongoQuery unused for Cassandra queries; required by the DatasourceConnection interface
+     * @return a list of maps representing the query results
+     * @throws IllegalArgumentException if queryString is null or blank
+     * @throws CassandraQueryExecutionException if query execution fails
+     */
     @Override
     public List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery) {
         if (queryString == null || queryString.isBlank()) {
