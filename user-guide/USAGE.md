@@ -26,7 +26,7 @@ Query is a microservice that queries backend databases (MariaDB, PostgreSQL, Mon
 ## Prerequisites
 
 ### For Running JAR
-- Java 17 or higher
+- Java 21 or higher
 - Maven 3.6+ (for building from source)
 - Access to MariaDB, PostgreSQL, MongoDB, and/or Cassandra databases
 
