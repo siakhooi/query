@@ -62,13 +62,15 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
 
     private Map<String, Object> mapRow(Row row) {
         ColumnDefinitions columnDefinitions = row.getColumnDefinitions();
+        Map<String, Object> mappedRow = new LinkedHashMap<>();
 
-        return IntStream.range(0, columnDefinitions.size())
-                .boxed()
-                .collect(Collectors.toMap(
-                        i -> columnDefinitions.get(i).getName().asInternal(),
-                        row::getObject,
-                        (v1, v2) -> v2,
-                        LinkedHashMap::new));
+        IntStream.range(0, columnDefinitions.size())
+                .forEach(i -> {
+                    String columnName = columnDefinitions.get(i).getName().asInternal();
+                    Object value = row.getObject(i);
+                    mappedRow.put(columnName, value);
+                });
+
+        return mappedRow;
     }
 }
