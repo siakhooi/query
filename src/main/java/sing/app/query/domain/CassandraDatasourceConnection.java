@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.DriverException;
 import com.datastax.oss.driver.api.core.cql.ColumnDefinitions;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
@@ -51,7 +52,7 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
             log.debug("Cassandra query returned {} rows", results.size());
             return results;
 
-        } catch (RuntimeException e) {
+        } catch (DriverException e) {
             String errorMessage = "Error executing Cassandra query: " + e.getMessage();
             log.error(errorMessage, e);
             throw new CassandraQueryExecutionException(errorMessage, e);
