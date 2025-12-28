@@ -1,9 +1,11 @@
 package sing.app.query.domain;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.DriverException;
@@ -28,9 +30,10 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
      * Executes a Cassandra CQL query and returns the results.
      *
      * @param queryString the CQL query to execute
-     * @param mongoQuery unused for Cassandra queries; required by the DatasourceConnection interface
+     * @param mongoQuery  unused for Cassandra queries; required by the
+     *                    DatasourceConnection interface
      * @return a list of maps representing the query results
-     * @throws IllegalArgumentException if queryString is null or blank
+     * @throws IllegalArgumentException         if queryString is null or blank
      * @throws CassandraQueryExecutionException if query execution fails
      */
     @Override
@@ -43,11 +46,9 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
 
         try {
             ResultSet resultSet = session.execute(queryString);
-            List<Map<String, Object>> results = new ArrayList<>();
-
-            for (Row row : resultSet) {
-                results.add(mapRow(row));
-            }
+            List<Map<String, Object>> results = StreamSupport.stream(resultSet.spliterator(), false)
+                    .map(this::mapRow)
+                    .collect(Collectors.toList());
 
             log.debug("Cassandra query returned {} rows", results.size());
             return results;
@@ -60,15 +61,14 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
     }
 
     private Map<String, Object> mapRow(Row row) {
-        Map<String, Object> mappedRow = new LinkedHashMap<>();
         ColumnDefinitions columnDefinitions = row.getColumnDefinitions();
 
-        for (int i = 0; i < columnDefinitions.size(); i++) {
-            String columnName = columnDefinitions.get(i).getName().asInternal();
-            Object value = row.getObject(i);
-            mappedRow.put(columnName, value);
-        }
-
-        return mappedRow;
+        return IntStream.range(0, columnDefinitions.size())
+                .boxed()
+                .collect(Collectors.toMap(
+                        i -> columnDefinitions.get(i).getName().asInternal(),
+                        row::getObject,
+                        (v1, v2) -> v2,
+                        LinkedHashMap::new));
     }
 }
