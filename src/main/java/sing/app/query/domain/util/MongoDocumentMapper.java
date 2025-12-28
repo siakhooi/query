@@ -19,8 +19,8 @@ public class MongoDocumentMapper {
         doc.forEach((key, value) -> {
             if (value instanceof ObjectId) {
                 row.put(key, value.toString());
-            } else if (value instanceof Document) {
-                row.put(key, toMap((Document) value));
+            } else if (value instanceof Document document) {
+                row.put(key, toMap(document));
             } else {
                 row.put(key, value);
             }
