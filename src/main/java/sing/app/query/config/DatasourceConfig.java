@@ -1,24 +1,22 @@
 package sing.app.query.config;
 
 import java.util.List;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Data
 @Validated
+@Slf4j
 @ConfigurationProperties(prefix = "datasource")
 public class DatasourceConfig {
 
@@ -75,9 +73,20 @@ public class DatasourceConfig {
 
     }
 
-    public List<Connection> getConnections(String connection) {
-        return getConnections().stream()
-                .filter(conn -> conn.getName().equals(connection))
-                .toList();
+    public Connection getConnection(String connection, String queryName)
+            throws DatasourceConfigException {
+        List<Connection> matchedConnections = getConnections().stream()
+                .filter(conn -> conn.getName().equals(connection)).toList();
+
+        if (matchedConnections.isEmpty()) {
+            log.warn("No connections found for query: {}", queryName);
+            throw new DatasourceConfigException("No connections found for query: " + queryName);
+        }
+        if (matchedConnections.size() > 1) {
+            log.warn("Multiple connections found for query: {}", queryName);
+            throw new DatasourceConfigException(
+                    "Multiple connections found for query: " + queryName);
+        }
+        return matchedConnections.get(0);
     }
 }

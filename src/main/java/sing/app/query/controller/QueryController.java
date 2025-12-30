@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,8 @@ public class QueryController {
     private DatasourceConfig datasourceConfig;
     private DatasourceConnectionService dcs;
 
-    public QueryController(QueryConfig queryConfig, DatasourceConfig datasourceConfig, DatasourceConnectionService dcs) {
+    public QueryController(QueryConfig queryConfig, DatasourceConfig datasourceConfig,
+            DatasourceConnectionService dcs) {
         this.queryConfig = queryConfig;
         this.datasourceConfig = datasourceConfig;
         this.dcs = dcs;
@@ -36,9 +38,9 @@ public class QueryController {
 
     @GetMapping("/query/{querysetName}")
     @Operation(summary = Util.API_QUERY_SUMMARY, description = Util.API_QUERY_DESCRIPTION)
-    @ApiResponse(responseCode = "200", description = "Success", content = {
-            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE) })
-    public Map<String,List<Map<String, Object>>> getQuery(@PathVariable String querysetName) {
+    @ApiResponse(responseCode = "200", description = "Success",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})
+    public Map<String, List<Map<String, Object>>> getQuery(@PathVariable String querysetName) {
         log.info("Fetching query for queryset: {}", querysetName);
 
         List<Query> queries = queryConfig.getQueries(querysetName);
@@ -49,20 +51,19 @@ public class QueryController {
         }
         Map<String, List<Map<String, Object>>> results = new HashMap<>();
         for (Query query : queries) {
-            List<Connection> connections = datasourceConfig.getConnections(query.getConnection());
-            if (connections.isEmpty()) {
-                log.warn("No connections found for query: {}", query.getName());
-                throw new ResponseStatusException(BAD_REQUEST, "No connections found");
-            }
-            if (connections.size() > 1) {
-                log.warn("Multiple connections found for query: {}", query.getName());
-                throw new ResponseStatusException(BAD_REQUEST, "Multiple connections found");
-            }
-            DatasourceConnection dc = dcs.getConnection(connections.get(0));
+            Connection connection;
+            try {
+                connection = datasourceConfig.getConnection(query.getConnection(), query.getName());
 
-            Connection conn = connections.get(0);
+            } catch (Exception e) {
+                log.error("Error fetching connection for query: {}", query.getName(), e);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Error fetching connection for query: " + query.getName());
+            }
+            DatasourceConnection dc = dcs.getConnection(connection);
+
             List<Map<String, Object>> result;
-            if ("mongodb".equalsIgnoreCase(conn.getType())) {
+            if ("mongodb".equalsIgnoreCase(connection.getType())) {
                 result = dc.execute(null, query.getMongoQuery());
             } else {
                 result = dc.execute(query.getQueryString(), null);

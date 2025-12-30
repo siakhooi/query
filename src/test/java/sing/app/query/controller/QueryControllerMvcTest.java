@@ -60,19 +60,19 @@ class QueryControllerMvcTest {
     }
     @Test
     void noConnectionsFound() throws Exception {
-        when(datasourceConfig.getConnections(any())).thenReturn(new ArrayList<>());
+        when(datasourceConfig.getConnections()).thenReturn(new ArrayList<>());
         this.mockMvc
-                .perform(get("/query/fruits"))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+            .perform(get("/query/fruits"))
+            .andDo(print())
+            .andExpect(status().is5xxServerError());
     }
     @Test
     void tooManyConnectionsFound() throws Exception {
-        when(datasourceConfig.getConnections(any())).thenReturn(List.of(new DatasourceConfig.Connection(), new DatasourceConfig.Connection()));
+        when(datasourceConfig.getConnections()).thenReturn(List.of(new DatasourceConfig.Connection(), new DatasourceConfig.Connection()));
         this.mockMvc
                 .perform(get("/query/fruits"))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
 
 }
