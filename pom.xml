@@ -18,7 +18,7 @@
 		<java.version>21</java.version>
 		<lombok.version>1.18.42</lombok.version>
 		<spring-cloud.version>2025.1.0-RC1</spring-cloud.version>
-		<springdoc-openapi.version>3.0.0</springdoc-openapi.version>
+		<springdoc-openapi.version>3.0.1</springdoc-openapi.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<mariadb-jdbc.version>3.5.7</mariadb-jdbc.version>
 		<postgresql-jdbc.version>42.7.8</postgresql-jdbc.version>
