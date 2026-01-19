@@ -21,7 +21,7 @@
 		<springdoc-openapi.version>3.0.1</springdoc-openapi.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<mariadb-jdbc.version>3.5.7</mariadb-jdbc.version>
-		<postgresql-jdbc.version>42.7.8</postgresql-jdbc.version>
+		<postgresql-jdbc.version>42.7.9</postgresql-jdbc.version>
 	    <sonar.organization>siakhooi</sonar.organization>
 	</properties>
 	<dependencies>
