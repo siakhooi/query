@@ -1,0 +1,27 @@
+{
+  "name": "JDK21 Development Dev Container",
+  "image": "siakhooi/devcontainer:jdk21",
+  "remoteUser": "maui",
+  "containerUser": "maui",
+  "updateRemoteUserUID": true,
+  "features": {},
+  "mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.makefile-tools",
+        "vscjava.vscode-java-pack",
+        "redhat.vscode-xml",
+        "redhat.vscode-yaml",
+        "ms-vscode.live-server",
+        "github.copilot",
+        "github.copilot-chat"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  }
+}
