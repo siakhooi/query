@@ -22,6 +22,8 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<mariadb-jdbc.version>3.5.8</mariadb-jdbc.version>
 		<postgresql-jdbc.version>42.7.10</postgresql-jdbc.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 	    <sonar.organization>siakhooi</sonar.organization>
 	</properties>
 	<dependencies>
@@ -112,7 +114,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -132,7 +134,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.14</version>
+				<version>${jacoco-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
