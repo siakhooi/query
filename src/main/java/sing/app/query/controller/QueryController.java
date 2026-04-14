@@ -62,12 +62,10 @@ public class QueryController {
             }
             DatasourceConnection dc = dcs.getConnection(connection);
 
-            List<Map<String, Object>> result;
-            if ("mongodb".equalsIgnoreCase(connection.getType())) {
-                result = dc.execute(null, query.getMongoQuery());
-            } else {
-                result = dc.execute(query.getQueryString(), null);
-            }
+            List<Map<String, Object>> result = switch (connection.getType().toLowerCase()) {
+                case "mongodb" -> dc.execute(null, query.getMongoQuery());
+                default -> dc.execute(query.getQueryString(), null);
+            };
             results.put(query.getName(), result);
         }
 

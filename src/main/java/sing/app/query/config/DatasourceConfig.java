@@ -87,6 +87,6 @@ public class DatasourceConfig {
             throw new DatasourceConfigException(
                     "Multiple connections found for query: " + queryName);
         }
-        return matchedConnections.get(0);
+        return matchedConnections.getFirst();
     }
 }

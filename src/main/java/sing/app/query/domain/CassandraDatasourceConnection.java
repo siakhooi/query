@@ -48,7 +48,7 @@ public class CassandraDatasourceConnection implements DatasourceConnection {
             ResultSet resultSet = session.execute(queryString);
             List<Map<String, Object>> results = StreamSupport.stream(resultSet.spliterator(), false)
                     .map(this::mapRow)
-                    .collect(Collectors.toList());
+                    .toList();
 
             log.debug("Cassandra query returned {} rows", results.size());
             return results;

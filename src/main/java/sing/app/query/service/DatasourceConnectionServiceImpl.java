@@ -39,17 +39,12 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
             return connections.get(connection.getName());
 
         } else {
-            DatasourceConnection conn;
-
-            if ("jdbc".equalsIgnoreCase(connection.getType())) {
-                conn = createJdbcConnection(connection);
-            } else if ("mongodb".equalsIgnoreCase(connection.getType())) {
-                conn = createMongodbConnection(connection);
-            } else if ("cassandra".equalsIgnoreCase(connection.getType())) {
-                conn = createCassandraConnection(connection);
-            } else {
-                throw new IllegalArgumentException("Unsupported connection type: " + connection.getType());
-            }
+            DatasourceConnection conn = switch (connection.getType().toLowerCase()) {
+                case "jdbc" -> createJdbcConnection(connection);
+                case "mongodb" -> createMongodbConnection(connection);
+                case "cassandra" -> createCassandraConnection(connection);
+                default -> throw new IllegalArgumentException("Unsupported connection type: " + connection.getType());
+            };
 
             connections.put(connection.getName(), conn);
             log.debug("Created new {} connection: {}", connection.getType(), connection.getName());
@@ -88,8 +83,8 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
         // Add authentication if username and password are provided
         if (connection.getUsername() != null && !connection.getUsername().isEmpty()) {
             MongoCredential credential = MongoCredential.createCredential(
-                connection.getUsername(),
-                connection.getDatabase() != null ? connection.getDatabase() : "admin",
+                    connection.getUsername(),
+                    connection.getDatabase() != null ? connection.getDatabase() : "admin",
                 connection.getPassword() != null ? connection.getPassword().toCharArray() : new char[0]
             );
             settingsBuilder.credential(credential);
