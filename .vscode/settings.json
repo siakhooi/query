@@ -1,0 +1,9 @@
+{
+  "java.jdt.ls.java.home": "/opt/jdk25",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-25",
+      "path": "/opt/jdk25"
+    }
+  ]
+}

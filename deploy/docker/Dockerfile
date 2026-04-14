@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 LABEL org.opencontainers.image.authors="Siak Hooi, Ng"
 LABEL org.opencontainers.image.vendor="Siak Hooi, Ng"
 LABEL org.opencontainers.image.url=https://hub.docker.com/r/siakhooi/query
@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.source=https://github.com/siakhooi/query
 LABEL org.opencontainers.image.title=query
 LABEL org.opencontainers.image.description="Query"
 LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.base.name=21-jre-alpine
+LABEL org.opencontainers.image.base.name=25-jre-alpine
 LABEL org.opencontainers.image.base.digest=sha256:e7ed585b34913e0a780e0282330183a0ea14ad6b929362d02aea1156b43262bf
 LABEL org.opencontainers.image.version=0.18.0
 LABEL org.opencontainers.image.revision=0.19.0
