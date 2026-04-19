@@ -14,9 +14,13 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -54,15 +58,23 @@ class DatasourceConnectionServiceImplTest {
         assertTrue(result instanceof JdbcDatasourceConnection);
     }
 
-    @Test
-    void testGetConnectionCreatesNewMongodbConnection() {
+    static Stream<Arguments> mongodbConnectionCredentials() {
+        return Stream.of(
+                Arguments.of("mongodb-with-credentials", "user", "pass"),
+                Arguments.of("mongo-no-user", null, null),
+                Arguments.of("mongo-empty-user", "", "ignored"));
+    }
+
+    @ParameterizedTest(name = "[{index}] connectionName={0}, username={1}, password={2}")
+    @MethodSource("mongodbConnectionCredentials")
+    void testGetConnectionCreatesMongodbConnection(String connectionName, String username, String password) {
         Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("mongodb-test");
+        when(mockConn.getName()).thenReturn(connectionName);
         when(mockConn.getType()).thenReturn("mongodb");
         when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
         when(mockConn.getDatabase()).thenReturn("testdb");
-        when(mockConn.getUsername()).thenReturn("user");
-        when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getUsername()).thenReturn(username);
+        when(mockConn.getPassword()).thenReturn(password);
 
         DatasourceConnection result = service.getConnection(mockConn);
 
@@ -565,38 +577,6 @@ class DatasourceConnectionServiceImplTest {
 
         assertNotNull(result);
         assertTrue(result instanceof JdbcDatasourceConnection);
-    }
-
-    @Test
-    void testMongodbConnectionSkipsCredentialWhenUsernameIsNull() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("mongo-no-user");
-        when(mockConn.getType()).thenReturn("mongodb");
-        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
-        when(mockConn.getDatabase()).thenReturn("testdb");
-        when(mockConn.getUsername()).thenReturn(null);
-        when(mockConn.getPassword()).thenReturn(null);
-
-        DatasourceConnection result = service.getConnection(mockConn);
-
-        assertNotNull(result);
-        assertTrue(result instanceof MongodbDatasourceConnection);
-    }
-
-    @Test
-    void testMongodbConnectionSkipsCredentialWhenUsernameIsEmpty() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("mongo-empty-user");
-        when(mockConn.getType()).thenReturn("mongodb");
-        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
-        when(mockConn.getDatabase()).thenReturn("testdb");
-        when(mockConn.getUsername()).thenReturn("");
-        when(mockConn.getPassword()).thenReturn("ignored");
-
-        DatasourceConnection result = service.getConnection(mockConn);
-
-        assertNotNull(result);
-        assertTrue(result instanceof MongodbDatasourceConnection);
     }
 
     @Test
