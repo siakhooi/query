@@ -20,14 +20,12 @@ class MongoPipelineBuilderTest {
 
     @Test
     void build_shouldReturnEmptyList_whenNoStages() {
-        // Arrange
+        // Collection null with filter, fields, sort, and pipeline all null yields an empty pipeline
         MongoQuery query = new MongoQuery(null, null, null, null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
-        // Act
         List<Document> pipeline = builder.build();
 
-        // Assert
         assertNotNull(pipeline);
         assertTrue(pipeline.isEmpty());
     }
@@ -110,20 +108,6 @@ class MongoPipelineBuilderTest {
     void build_shouldHandleEmptyOrWhitespaceValues() {
         // Arrange
         MongoQuery query = new MongoQuery(null, " ", "", "  ", "");
-        MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
-
-        // Act
-        List<Document> pipeline = builder.build();
-
-        // Assert
-        assertNotNull(pipeline);
-        assertTrue(pipeline.isEmpty());
-    }
-
-    @Test
-    void build_shouldHandleNullValues() {
-        // Arrange
-        MongoQuery query = new MongoQuery(null, null, null, null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
