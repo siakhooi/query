@@ -358,73 +358,25 @@ class DatasourceConnectionServiceImplTest {
         assertNotNull(ex);
     }
 
-    @Test
-    void testParseCassandraUri_withoutScheme() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-real-noscheme");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("testhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("dc1");
-
-        DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
-
-        Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
-
-        assertNotNull(ex);
+    static Stream<Arguments> cassandraUrlsWhereRealDriverFailsToConnect() {
+        return Stream.of(
+                Arguments.of("cass-real-noscheme", "testhost:9042", "dc1"),
+                Arguments.of("cass-plain-host", "localhost:9042", "datacenter1"),
+                Arguments.of("cass-host-only", "cassandra-host", "datacenter1"),
+                Arguments.of("cass-relative", "//myhost:9042", "datacenter1"),
+                Arguments.of("cass-path", "/myhost", "datacenter1"),
+                Arguments.of("cass-default-port-real", "cassandra://testhost", "dc1"));
     }
 
-    @Test
-    void testParseCassandraUri_plainHostPort() {
+    @ParameterizedTest(name = "[{index}] {0} url={1} dc={2}")
+    @MethodSource("cassandraUrlsWhereRealDriverFailsToConnect")
+    void testCassandraRealSessionFailsToConnect_forVariousUrls(
+            String connectionName, String url, String datacenter) {
         Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-plain-host");
+        when(mockConn.getName()).thenReturn(connectionName);
         when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("localhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-
-        DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
-
-        Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
-
-        assertNotNull(ex);
-    }
-
-    @Test
-    void testParseCassandraUri_hostOnly() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-host-only");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("cassandra-host");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-
-        DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
-
-        Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
-
-        assertNotNull(ex);
-    }
-
-    @Test
-    void testParseCassandraUri_relativeUri() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-relative");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("//myhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-
-        DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
-
-        Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
-
-        assertNotNull(ex);
-    }
-
-    @Test
-    void testParseCassandraUri_pathOnly() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-path");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("/myhost");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
+        when(mockConn.getUrl()).thenReturn(url);
+        when(mockConn.getDatacenter()).thenReturn(datacenter);
 
         DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
 
@@ -444,21 +396,6 @@ class DatasourceConnectionServiceImplTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.getConnection(mockConn));
 
         assertTrue(ex.getMessage().contains("Invalid Cassandra URL"));
-    }
-
-    @Test
-    void testBuildCassandraSession_withDefaultPort() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-default-port-real");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("cassandra://testhost");
-        when(mockConn.getDatacenter()).thenReturn("dc1");
-
-        DatasourceConnectionServiceImpl testService = new DatasourceConnectionServiceImpl();
-
-        Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
-
-        assertNotNull(ex);
     }
 
     @Test
