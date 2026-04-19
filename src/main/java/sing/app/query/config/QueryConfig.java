@@ -25,33 +25,23 @@ public class QueryConfig {
 
     public List<Query> getQueries(String querysetName) {
         return getQuerysets().stream()
-                .filter(qs -> qs.getName().equals(querysetName))
-                .flatMap(qs -> qs.getQueries().stream())
+                .filter(qs -> qs.name().equals(querysetName))
+                .flatMap(qs -> qs.queries().stream())
                 .toList();
     }
 
-    @Data
-    public static class Queryset {
-        @NotBlank
-        private String name;
-
-        @NotBlank
-        private List<Query> queries = new ArrayList<>();
-
+    public static record Queryset(
+            @NotBlank String name,
+            List<Query> queries) {
+        public Queryset {
+            queries = queries == null ? new ArrayList<>() : new ArrayList<>(queries);
+        }
     }
 
-    @Data
-    public static class Query {
-        @NotBlank
-        private String name;
-
-        @JsonIgnore
-        private String queryString;
-
-        private MongoQuery mongoQuery;
-
-        @NotBlank
-        @JsonInclude(Include.NON_NULL)
-        private String connection;
+    public static record Query(
+            @NotBlank String name,
+            @JsonIgnore String queryString,
+            MongoQuery mongoQuery,
+            @NotBlank @JsonInclude(Include.NON_NULL) String connection) {
     }
 }

@@ -4,6 +4,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,15 +29,11 @@ public class QueryConfigController {
     public QueryConfig getQueryConfig() {
         QueryConfig qc = new QueryConfig();
         for (var qs : queryConfig.getQuerysets()) {
-            QueryConfig.Queryset qset = new QueryConfig.Queryset();
-            qset.setName(qs.getName());
-            for (var q : qs.getQueries()) {
-                QueryConfig.Query query = new QueryConfig.Query();
-                query.setName(q.getName());
-                query.setConnection(q.getConnection());
-                qset.getQueries().add(query);
+            List<QueryConfig.Query> stripped = new ArrayList<>();
+            for (var q : qs.queries()) {
+                stripped.add(new QueryConfig.Query(q.name(), null, null, q.connection()));
             }
-            qc.getQuerysets().add(qset);
+            qc.getQuerysets().add(new QueryConfig.Queryset(qs.name(), stripped));
         }
 
         return qc;

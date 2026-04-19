@@ -14,28 +14,18 @@ class QueryConfigTest {
     void setUp() {
         config = new QueryConfig();
 
-        QueryConfig.Query query1 = new QueryConfig.Query();
-        query1.setName("q1");
-        query1.setQueryString("SELECT * FROM table1");
-        query1.setConnection("conn1");
+        QueryConfig.Query query1 =
+                new QueryConfig.Query("q1", "SELECT * FROM table1", null, "conn1");
 
-        QueryConfig.Query query2 = new QueryConfig.Query();
-        query2.setName("q2");
-        query2.setQueryString("SELECT * FROM table2");
-        query2.setConnection("conn2");
+        QueryConfig.Query query2 =
+                new QueryConfig.Query("q2", "SELECT * FROM table2", null, "conn2");
 
-        QueryConfig.Queryset queryset1 = new QueryConfig.Queryset();
-        queryset1.setName("set1");
-        queryset1.setQueries(List.of(query1, query2));
+        QueryConfig.Queryset queryset1 = new QueryConfig.Queryset("set1", List.of(query1, query2));
 
-        QueryConfig.Query query3 = new QueryConfig.Query();
-        query3.setName("q3");
-        query3.setQueryString("SELECT * FROM table3");
-        query3.setConnection("conn3");
+        QueryConfig.Query query3 =
+                new QueryConfig.Query("q3", "SELECT * FROM table3", null, "conn3");
 
-        QueryConfig.Queryset queryset2 = new QueryConfig.Queryset();
-        queryset2.setName("set2");
-        queryset2.setQueries(List.of(query3));
+        QueryConfig.Queryset queryset2 = new QueryConfig.Queryset("set2", List.of(query3));
 
         config.setQuerysets(List.of(queryset1, queryset2));
     }
@@ -44,12 +34,12 @@ class QueryConfigTest {
     void testGetQueriesReturnsCorrectQueries() {
         List<QueryConfig.Query> queries = config.getQueries("set1");
         assertEquals(2, queries.size());
-        assertEquals("q1", queries.get(0).getName());
-        assertEquals("q2", queries.get(1).getName());
+        assertEquals("q1", queries.get(0).name());
+        assertEquals("q2", queries.get(1).name());
 
         List<QueryConfig.Query> queries2 = config.getQueries("set2");
         assertEquals(1, queries2.size());
-        assertEquals("q3", queries2.get(0).getName());
+        assertEquals("q3", queries2.get(0).name());
     }
 
     @Test
@@ -59,24 +49,19 @@ class QueryConfigTest {
     }
 
     @Test
-    void testQuerysetAndQuerySettersAndGetters() {
-        QueryConfig.Queryset qs = new QueryConfig.Queryset();
-        qs.setName("testset");
-        assertEquals("testset", qs.getName());
-
-        QueryConfig.Query q = new QueryConfig.Query();
-        q.setName("testquery");
-        q.setQueryString("SELECT 1");
-        q.setConnection("testconn");
+    void testQuerysetAndQueryAccessors() {
+        QueryConfig.Queryset qs = new QueryConfig.Queryset("testset", List.of());
+        assertEquals("testset", qs.name());
+        assertTrue(qs.queries().isEmpty());
 
         MongoQuery mongoQuery = new MongoQuery("books", "{\"genre\":\"Fiction\"}", null, null, null);
-        q.setMongoQuery(mongoQuery);
+        QueryConfig.Query q = new QueryConfig.Query("testquery", "SELECT 1", mongoQuery, "testconn");
 
-        assertEquals("testquery", q.getName());
-        assertEquals("SELECT 1", q.getQueryString());
-        assertEquals("books", q.getMongoQuery().collection());
-        assertEquals("{\"genre\":\"Fiction\"}", q.getMongoQuery().filter());
-        assertEquals("testconn", q.getConnection());
+        assertEquals("testquery", q.name());
+        assertEquals("SELECT 1", q.queryString());
+        assertEquals("books", q.mongoQuery().collection());
+        assertEquals("{\"genre\":\"Fiction\"}", q.mongoQuery().filter());
+        assertEquals("testconn", q.connection());
     }
 
     @Test

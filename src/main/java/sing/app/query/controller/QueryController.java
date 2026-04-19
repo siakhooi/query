@@ -53,20 +53,20 @@ public class QueryController {
         for (Query query : queries) {
             Connection connection;
             try {
-                connection = datasourceConfig.getConnection(query.getConnection(), query.getName());
+                connection = datasourceConfig.getConnection(query.connection(), query.name());
 
             } catch (Exception e) {
-                log.error("Error fetching connection for query: {}", query.getName(), e);
+                log.error("Error fetching connection for query: {}", query.name(), e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Error fetching connection for query: " + query.getName());
+                        "Error fetching connection for query: " + query.name());
             }
             DatasourceConnection dc = dcs.getConnection(connection);
 
             List<Map<String, Object>> result = switch (connection.getType().toLowerCase()) {
-                case "mongodb" -> dc.execute(null, query.getMongoQuery());
-                default -> dc.execute(query.getQueryString(), null);
+                case "mongodb" -> dc.execute(null, query.mongoQuery());
+                default -> dc.execute(query.queryString(), null);
             };
-            results.put(query.getName(), result);
+            results.put(query.name(), result);
         }
 
         return results;
