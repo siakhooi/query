@@ -12,10 +12,14 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -82,32 +86,19 @@ class CassandraDatasourceConnectionTest {
         verify(session).execute(query);
     }
 
-    @Test
-    void execute_withNullQueryString_throwsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> connection.execute(null, mongoQuery)
-        );
-
-        assertEquals("Cassandra queries require a non-empty queryString", exception.getMessage());
+    static Stream<Arguments> invalidCassandraQueryStrings() {
+        return Stream.of(
+                Arguments.of((String) null),
+                Arguments.of("   "),
+                Arguments.of(""));
     }
 
-    @Test
-    void execute_withBlankQueryString_throwsIllegalArgumentException() {
+    @ParameterizedTest(name = "[{index}] queryString={0}")
+    @MethodSource("invalidCassandraQueryStrings")
+    void execute_withInvalidQueryString_throwsIllegalArgumentException(String queryString) {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> connection.execute("   ", mongoQuery)
-        );
-
-        assertEquals("Cassandra queries require a non-empty queryString", exception.getMessage());
-    }
-
-    @Test
-    void execute_withEmptyQueryString_throwsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> connection.execute("", mongoQuery)
-        );
+                () -> connection.execute(queryString, mongoQuery));
 
         assertEquals("Cassandra queries require a non-empty queryString", exception.getMessage());
     }
