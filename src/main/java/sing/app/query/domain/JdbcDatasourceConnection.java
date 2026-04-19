@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import sing.app.query.config.MongoQuery;
 
 @Slf4j
-public class JdbcDatasourceConnection implements DatasourceConnection {
+public final class JdbcDatasourceConnection implements DatasourceConnection {
 
     private JdbcTemplate jdbcTemplate;
 

@@ -21,7 +21,7 @@ import sing.app.query.config.MongoQuery;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class CassandraDatasourceConnection implements DatasourceConnection {
+public final class CassandraDatasourceConnection implements DatasourceConnection {
 
     private final CqlSession session;
 

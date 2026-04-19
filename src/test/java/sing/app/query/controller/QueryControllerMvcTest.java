@@ -2,7 +2,9 @@ package sing.app.query.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import sing.app.query.config.DatasourceConfig;
-import sing.app.query.domain.DatasourceConnection;
+import sing.app.query.domain.JdbcDatasourceConnection;
 import sing.app.query.service.DatasourceConnectionService;
 
 @SpringBootTest
@@ -37,10 +40,10 @@ class QueryControllerMvcTest {
 
     @BeforeEach
     void setUp() {
-        DatasourceConnection dc=mock(DatasourceConnection.class);
-        when(dcs.getConnection(any())).thenReturn(dc);
-        List<Map<String, Object>> result=new ArrayList<>();
-        when(dc.execute(any(), any())).thenReturn(result);
+        DataSource dataSource = mock(DataSource.class);
+        JdbcDatasourceConnection jdbc = spy(new JdbcDatasourceConnection(dataSource));
+        doReturn(new ArrayList<Map<String, Object>>()).when(jdbc).execute(any(), any());
+        when(dcs.getConnection(any())).thenReturn(jdbc);
     }
 
     @Test

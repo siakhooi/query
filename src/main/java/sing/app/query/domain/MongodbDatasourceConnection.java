@@ -16,7 +16,7 @@ import sing.app.query.domain.util.MongoDocumentMapper;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MongodbDatasourceConnection implements DatasourceConnection {
+public final class MongodbDatasourceConnection implements DatasourceConnection {
 
     private final MongoClient mongoClient;
     private final String databaseName;
