@@ -7,6 +7,8 @@ deployment:
 # replicaCount: 1              # set the deployment spec.replicas
 
   image:
+    # Container image repository (without tag). Override for a private registry, retag, or derived build.
+    repository: siakhooi/query
     tag: "0.18.0"
 #   pullPolicy: IfNotPresent   # set the deployment container pullPolicy
 

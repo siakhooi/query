@@ -14,5 +14,5 @@ helm.sh/chart: {{ include "helm_chart_name_version" . }}
 {{- end }}
 
 {{- define "image-name" -}}
-siakhooi/query
+{{- .Values.deployment.image.repository | default "siakhooi/query" -}}
 {{- end }}

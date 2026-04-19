@@ -293,6 +293,8 @@ Create a `custom-values.yaml` file:
 ```yaml
 deployment:
   image:
+    # Optional: defaults to siakhooi/query — set to your registry path or retagged image name
+    # repository: my-registry.example.com/team/query
     tag: "0.13.0"
 
   resources:
@@ -331,6 +333,8 @@ default_query_yaml:
             connection: fruitdb
             queryString: SELECT name, color, taste FROM fruits
 ```
+
+The deployment image is `deployment.image.repository` plus `deployment.image.tag`. The default repository is `siakhooi/query`. Set `deployment.image.repository` when you use a private registry, a retagged image, or a derived build (for example `registry.example.com/team/query-mirror`).
 
 Install with custom values:
 
