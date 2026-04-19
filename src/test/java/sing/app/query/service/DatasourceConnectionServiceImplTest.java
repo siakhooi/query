@@ -554,8 +554,8 @@ class DatasourceConnectionServiceImplTest {
         CqlSession session = mock(CqlSession.class);
         when(builder.addContactPoint(any(InetSocketAddress.class))).thenReturn(builder);
         when(builder.withLocalDatacenter(anyString())).thenReturn(builder);
-        when(builder.withAuthCredentials(eq("user"), eq(""))).thenReturn(builder);
-        when(builder.withKeyspace(eq("ks1"))).thenReturn(builder);
+        when(builder.withAuthCredentials("user", "")).thenReturn(builder);
+        when(builder.withKeyspace("ks1")).thenReturn(builder);
         when(builder.build()).thenReturn(session);
 
         DatasourceConnectionServiceImpl impl = new DatasourceConnectionServiceImpl();
