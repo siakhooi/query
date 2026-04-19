@@ -213,15 +213,25 @@ class DatasourceConnectionServiceImplTest {
         assertTrue(ex.getMessage().contains("must include a host"));
     }
 
-    @Test
-    void testCassandraConnectionWithUrlWithoutScheme() {
+    static Stream<Arguments> cassandraHostPortUrlCredentialVariations() {
+        return Stream.of(
+                Arguments.of("cass-no-scheme", "user", "pass"),
+                Arguments.of("cass-no-auth", null, null),
+                Arguments.of("cass-blank-user", "   ", "pass"),
+                Arguments.of("cass-no-pass", "user", null));
+    }
+
+    @ParameterizedTest(name = "[{index}] {0} username={1} password={2}")
+    @MethodSource("cassandraHostPortUrlCredentialVariations")
+    void testCassandraConnectionWithHostPortUrlAndCredentials(
+            String connectionName, String username, String password) {
         Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-no-scheme");
+        when(mockConn.getName()).thenReturn(connectionName);
         when(mockConn.getType()).thenReturn("cassandra");
         when(mockConn.getUrl()).thenReturn("localhost:9042");
         when(mockConn.getDatacenter()).thenReturn("datacenter1");
-        when(mockConn.getUsername()).thenReturn("user");
-        when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getUsername()).thenReturn(username);
+        when(mockConn.getPassword()).thenReturn(password);
 
         CqlSession mockSession = mock(CqlSession.class);
         DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
@@ -256,63 +266,6 @@ class DatasourceConnectionServiceImplTest {
         when(mockConn.getType()).thenReturn("cassandra");
         when(mockConn.getUrl()).thenReturn("cassandra://localhost:9043");
         when(mockConn.getDatacenter()).thenReturn("datacenter1");
-
-        CqlSession mockSession = mock(CqlSession.class);
-        DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
-
-        DatasourceConnection result = cassandraService.getConnection(mockConn);
-
-        assertNotNull(result);
-        assertTrue(result instanceof CassandraDatasourceConnection);
-    }
-
-    @Test
-    void testCassandraConnectionWithoutAuthentication() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-no-auth");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("localhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-        when(mockConn.getUsername()).thenReturn(null);
-        when(mockConn.getPassword()).thenReturn(null);
-
-        CqlSession mockSession = mock(CqlSession.class);
-        DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
-
-        DatasourceConnection result = cassandraService.getConnection(mockConn);
-
-        assertNotNull(result);
-        assertTrue(result instanceof CassandraDatasourceConnection);
-    }
-
-    @Test
-    void testCassandraConnectionWithBlankUsername() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-blank-user");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("localhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-        when(mockConn.getUsername()).thenReturn("   ");
-        when(mockConn.getPassword()).thenReturn("pass");
-
-        CqlSession mockSession = mock(CqlSession.class);
-        DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
-
-        DatasourceConnection result = cassandraService.getConnection(mockConn);
-
-        assertNotNull(result);
-        assertTrue(result instanceof CassandraDatasourceConnection);
-    }
-
-    @Test
-    void testCassandraConnectionWithUsernameButNoPassword() {
-        Connection mockConn = mock(Connection.class);
-        when(mockConn.getName()).thenReturn("cass-no-pass");
-        when(mockConn.getType()).thenReturn("cassandra");
-        when(mockConn.getUrl()).thenReturn("localhost:9042");
-        when(mockConn.getDatacenter()).thenReturn("datacenter1");
-        when(mockConn.getUsername()).thenReturn("user");
-        when(mockConn.getPassword()).thenReturn(null);
 
         CqlSession mockSession = mock(CqlSession.class);
         DatasourceConnectionServiceImpl cassandraService = new TestableDatasourceConnectionServiceImpl(mockSession);
