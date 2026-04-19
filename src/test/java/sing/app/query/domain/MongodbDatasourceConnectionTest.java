@@ -2,10 +2,12 @@ package sing.app.query.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -164,10 +166,55 @@ class MongodbDatasourceConnectionTest {
     }
 
     @Test
-    void logQueryExecution_shouldNotFail_whenQueryIsNull() {
-        // This test is now covered by the execute_shouldHandleNullQuery test
-        // and we don't need to test private methods directly
-        assertTrue(true);
+    void execute_shouldRethrowIllegalArgumentException_whenThrownDuringExecution() {
+        MongoQuery query = createBasicQuery();
+
+        when(mongoClient.getDatabase(testDatabaseName)).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection("testCollection")).thenReturn(mongoCollection);
+        when(mongoCollection.find()).thenReturn(findIterable);
+        doThrow(new IllegalArgumentException("invalid cursor")).when(findIterable).forEach(any());
+
+        IllegalArgumentException thrown = assertThrows(
+                IllegalArgumentException.class,
+                () -> datasourceConnection.execute("testQuery", query));
+
+        assertEquals("invalid cursor", thrown.getMessage());
+    }
+
+    @Test
+    void execute_shouldWrapUnexpectedRuntimeException_inMongoQueryExecutionException() {
+        MongoQuery query = createBasicQuery();
+
+        when(mongoClient.getDatabase(testDatabaseName)).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection("testCollection")).thenReturn(mongoCollection);
+        when(mongoCollection.find()).thenReturn(findIterable);
+        var cause = new IllegalStateException("unexpected failure");
+        doThrow(cause).when(findIterable).forEach(any());
+
+        MongoQueryExecutionException thrown = assertThrows(
+                MongoQueryExecutionException.class,
+                () -> datasourceConnection.execute("testQuery", query));
+
+        assertTrue(thrown.getMessage().contains("Unexpected error executing MongoDB query"));
+        assertSame(cause, thrown.getCause());
+    }
+
+    @Test
+    void execute_shouldWrapRuntimeExceptionFromAggregationPath() {
+        MongoQuery query = new MongoQuery("testCollection", "{ \"x\": 1 }", null, null, null);
+
+        when(mongoClient.getDatabase(testDatabaseName)).thenReturn(mongoDatabase);
+        when(mongoDatabase.getCollection("testCollection")).thenReturn(mongoCollection);
+        when(mongoCollection.aggregate(any())).thenReturn(aggregateIterable);
+        var cause = new UnsupportedOperationException("aggregate failed");
+        doThrow(cause).when(aggregateIterable).forEach(any());
+
+        MongoQueryExecutionException thrown = assertThrows(
+                MongoQueryExecutionException.class,
+                () -> datasourceConnection.execute("testQuery", query));
+
+        assertTrue(thrown.getMessage().contains("Unexpected error executing MongoDB query"));
+        assertSame(cause, thrown.getCause());
     }
 
     private void stubMongoIterableForEach(MongoIterable<Document> iterable, Document... documents) {
