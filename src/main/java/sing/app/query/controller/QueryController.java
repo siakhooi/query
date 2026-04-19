@@ -1,9 +1,14 @@
 package sing.app.query.controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,24 +54,46 @@ public class QueryController {
             log.warn("No queries found for queryset: {}", querysetName);
             throw new ResponseStatusException(BAD_REQUEST, "No queries found");
         }
-        Map<String, List<Map<String, Object>>> results = new HashMap<>();
-        for (Query query : queries) {
-            Connection connection;
-            try {
-                connection = datasourceConfig.getConnection(query.connection(), query.name());
-
-            } catch (Exception e) {
-                log.error("Error fetching connection for query: {}", query.name(), e);
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        String.format("Error fetching connection for query: %s", query.name()));
+        Map<String, List<Map<String, Object>>> results = HashMap.newHashMap(queries.size());
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<Map.Entry<String, List<Map<String, Object>>>>> futures = new ArrayList<>(queries.size());
+            for (Query query : queries) {
+                futures.add(executor.submit(() -> {
+                    Connection connection;
+                    try {
+                        connection = datasourceConfig.getConnection(query.connection(), query.name());
+                    } catch (Exception e) {
+                        log.error("Error fetching connection for query: {}", query.name(), e);
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                String.format("Error fetching connection for query: %s", query.name()));
+                    }
+                    DatasourceConnection dc = dcs.getConnection(connection);
+                    List<Map<String, Object>> result = switch (connection.getType().toLowerCase()) {
+                        case "mongodb" -> dc.execute(null, query.mongoQuery());
+                        default -> dc.execute(query.queryString(), null);
+                    };
+                    return Map.entry(query.name(), result);
+                }));
             }
-            DatasourceConnection dc = dcs.getConnection(connection);
-
-            List<Map<String, Object>> result = switch (connection.getType().toLowerCase()) {
-                case "mongodb" -> dc.execute(null, query.mongoQuery());
-                default -> dc.execute(query.queryString(), null);
-            };
-            results.put(query.name(), result);
+            for (Future<Map.Entry<String, List<Map<String, Object>>>> future : futures) {
+                try {
+                    Map.Entry<String, List<Map<String, Object>>> entry = future.get();
+                    results.put(entry.getKey(), entry.getValue());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Interrupted", e);
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof ResponseStatusException rse) {
+                        throw rse;
+                    }
+                    if (cause instanceof RuntimeException re) {
+                        throw re;
+                    }
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Query execution failed", cause);
+                }
+            }
         }
 
         return results;
