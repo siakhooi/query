@@ -80,12 +80,12 @@ public class DatasourceConfig {
 
         if (matchedConnections.isEmpty()) {
             log.warn("No connections found for query: {}", queryName);
-            throw new DatasourceConfigException("No connections found for query: " + queryName);
+            throw new DatasourceConfigException(String.format("No connections found for query: %s", queryName));
         }
         if (matchedConnections.size() > 1) {
             log.warn("Multiple connections found for query: {}", queryName);
             throw new DatasourceConfigException(
-                    "Multiple connections found for query: " + queryName);
+                    String.format("Multiple connections found for query: %s", queryName));
         }
         return matchedConnections.getFirst();
     }

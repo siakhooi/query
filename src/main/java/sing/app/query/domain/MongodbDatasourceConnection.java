@@ -39,14 +39,14 @@ public final class MongodbDatasourceConnection implements DatasourceConnection {
             return results;
 
         } catch (MongoException e) {
-            String errorMessage = "MongoDB driver error executing query: " + e.getMessage();
+            String errorMessage = String.format( "MongoDB driver error executing query: %s", e.getMessage());
             log.error(errorMessage, e);
             throw new MongoQueryExecutionException(errorMessage, e);
         } catch (IllegalArgumentException e) {
             log.error("Invalid MongoDB query configuration: {}", e.getMessage(), e);
             throw e;
         } catch (RuntimeException e) {
-            String errorMessage = "Unexpected error executing MongoDB query: " + e.getMessage();
+            String errorMessage = String.format("Unexpected error executing MongoDB query: %s", e.getMessage());
             log.error(errorMessage, e);
             throw new MongoQueryExecutionException(errorMessage, e);
         }

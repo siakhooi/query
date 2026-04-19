@@ -58,7 +58,7 @@ public class QueryController {
             } catch (Exception e) {
                 log.error("Error fetching connection for query: {}", query.name(), e);
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Error fetching connection for query: " + query.name());
+                        String.format("Error fetching connection for query: %s", query.name()));
             }
             DatasourceConnection dc = dcs.getConnection(connection);
 

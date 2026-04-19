@@ -43,7 +43,8 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
                 case "jdbc" -> createJdbcConnection(connection);
                 case "mongodb" -> createMongodbConnection(connection);
                 case "cassandra" -> createCassandraConnection(connection);
-                default -> throw new IllegalArgumentException("Unsupported connection type: " + connection.getType());
+                default -> throw new IllegalArgumentException(
+                    String.format("Unsupported connection type: %s", connection.getType()));
             };
 
             connections.put(connection.getName(), conn);
@@ -94,7 +95,8 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
 
         String databaseName = connection.getDatabase();
         if (databaseName == null || databaseName.isEmpty()) {
-            throw new IllegalArgumentException("Database name is required for MongoDB connection: " + connection.getName());
+            throw new IllegalArgumentException(
+                String.format("Database name is required for MongoDB connection: %s", connection.getName()));
         }
 
         return new MongodbDatasourceConnection(mongoClient, databaseName);
@@ -108,10 +110,12 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
 
     private void validateCassandraConfig(Connection connection) {
         if (connection.getUrl() == null || connection.getUrl().isBlank()) {
-            throw new IllegalArgumentException("URL is required for Cassandra connection: " + connection.getName());
+            throw new IllegalArgumentException(
+                String.format("URL is required for Cassandra connection: %s", connection.getName()));
         }
         if (connection.getDatacenter() == null || connection.getDatacenter().isBlank()) {
-            throw new IllegalArgumentException("Datacenter is required for Cassandra connection: " + connection.getName());
+            throw new IllegalArgumentException(
+                String.format("Datacenter is required for Cassandra connection: %s", connection.getName()));
         }
     }
 
@@ -119,7 +123,8 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
         URI uri = parseCassandraUri(connection.getUrl());
         String host = uri.getHost();
         if (host == null || host.isBlank()) {
-            throw new IllegalArgumentException("Cassandra URL must include a host: " + connection.getUrl());
+            throw new IllegalArgumentException(
+                String.format("Cassandra URL must include a host: %s", connection.getUrl()));
         }
         int port = uri.getPort() == -1 ? 9042 : uri.getPort();
 
@@ -148,7 +153,8 @@ public class DatasourceConnectionServiceImpl implements DatasourceConnectionServ
             }
             return uri;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Cassandra URL: " + url, e);
+            throw new IllegalArgumentException(
+                String.format("Invalid Cassandra URL: %s", url), e);
         }
     }
 
