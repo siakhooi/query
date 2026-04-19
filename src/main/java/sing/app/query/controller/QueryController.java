@@ -58,45 +58,64 @@ public class QueryController {
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<Map.Entry<String, List<Map<String, Object>>>>> futures = new ArrayList<>(queries.size());
             for (Query query : queries) {
-                futures.add(executor.submit(() -> {
-                    Connection connection;
-                    try {
-                        connection = datasourceConfig.getConnection(query.connection(), query.name());
-                    } catch (Exception e) {
-                        log.error("Error fetching connection for query: {}", query.name(), e);
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                                String.format("Error fetching connection for query: %s", query.name()));
-                    }
-                    DatasourceConnection dc = dcs.getConnection(connection);
-                    List<Map<String, Object>> result = switch (connection.getType().toLowerCase()) {
-                        case "mongodb" -> dc.execute(null, query.mongoQuery());
-                        default -> dc.execute(query.queryString(), null);
-                    };
-                    return Map.entry(query.name(), result);
-                }));
+                futures.add(executor.submit(() -> runQuery(query)));
             }
             for (Future<Map.Entry<String, List<Map<String, Object>>>> future : futures) {
-                try {
-                    Map.Entry<String, List<Map<String, Object>>> entry = future.get();
-                    results.put(entry.getKey(), entry.getValue());
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Interrupted", e);
-                } catch (ExecutionException e) {
-                    Throwable cause = e.getCause();
-                    if (cause instanceof ResponseStatusException rse) {
-                        throw rse;
-                    }
-                    if (cause instanceof RuntimeException re) {
-                        throw re;
-                    }
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Query execution failed", cause);
-                }
+                mergeFutureResult(future, results);
             }
         }
 
         return results;
+    }
+
+    private Map.Entry<String, List<Map<String, Object>>> runQuery(Query query) {
+        Connection connection = resolveConnection(query);
+        DatasourceConnection dc = dcs.getConnection(connection);
+        List<Map<String, Object>> rows = executeQueryAgainstConnection(connection, query, dc);
+        return Map.entry(query.name(), rows);
+    }
+
+    private Connection resolveConnection(Query query) {
+        try {
+            return datasourceConfig.getConnection(query.connection(), query.name());
+        } catch (Exception e) {
+            log.error("Error fetching connection for query: {}", query.name(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    String.format("Error fetching connection for query: %s", query.name()));
+        }
+    }
+
+    private static List<Map<String, Object>> executeQueryAgainstConnection(
+            Connection connection, Query query, DatasourceConnection dc) {
+        return switch (connection.getType().toLowerCase()) {
+            case "mongodb" -> dc.execute(null, query.mongoQuery());
+            default -> dc.execute(query.queryString(), null);
+        };
+    }
+
+    private static void mergeFutureResult(
+            Future<Map.Entry<String, List<Map<String, Object>>>> future,
+            Map<String, List<Map<String, Object>>> results) {
+        try {
+            Map.Entry<String, List<Map<String, Object>>> entry = future.get();
+            results.put(entry.getKey(), entry.getValue());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Interrupted", e);
+        } catch (ExecutionException e) {
+            rethrowExecutionCause(e);
+        }
+    }
+
+    private static void rethrowExecutionCause(ExecutionException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof ResponseStatusException rse) {
+            throw rse;
+        }
+        if (cause instanceof RuntimeException re) {
+            throw re;
+        }
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Query execution failed", cause);
     }
 
 }
