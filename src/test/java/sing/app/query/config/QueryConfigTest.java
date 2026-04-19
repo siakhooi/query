@@ -69,15 +69,13 @@ class QueryConfigTest {
         q.setQueryString("SELECT 1");
         q.setConnection("testconn");
 
-        MongoQuery mongoQuery = new MongoQuery();
-        mongoQuery.setCollection("books");
-        mongoQuery.setFilter("{\"genre\":\"Fiction\"}");
+        MongoQuery mongoQuery = new MongoQuery("books", "{\"genre\":\"Fiction\"}", null, null, null);
         q.setMongoQuery(mongoQuery);
 
         assertEquals("testquery", q.getName());
         assertEquals("SELECT 1", q.getQueryString());
-        assertEquals("books", q.getMongoQuery().getCollection());
-        assertEquals("{\"genre\":\"Fiction\"}", q.getMongoQuery().getFilter());
+        assertEquals("books", q.getMongoQuery().collection());
+        assertEquals("{\"genre\":\"Fiction\"}", q.getMongoQuery().filter());
         assertEquals("testconn", q.getConnection());
     }
 

@@ -28,7 +28,7 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
 
         try {
             MongoDatabase database = mongoClient.getDatabase(databaseName);
-            String collectionName = mongoQuery.getCollection();
+            String collectionName = mongoQuery.collection();
             MongoCollection<Document> mongoCollection = database.getCollection(collectionName);
 
             List<Map<String, Object>> results = MongoQueryValidator.shouldUseAggregation(mongoQuery)
@@ -55,8 +55,8 @@ public class MongodbDatasourceConnection implements DatasourceConnection {
     private void logQueryExecution(MongoQuery mongoQuery) {
         if (mongoQuery != null) {
             log.debug("Executing MongoDB query - collection: {}, filter: {}, fields: {}, sort: {}, pipeline: {}",
-                    mongoQuery.getCollection(), mongoQuery.getFilter(), mongoQuery.getFields(),
-                    mongoQuery.getSort(), mongoQuery.getPipeline());
+                    mongoQuery.collection(), mongoQuery.filter(), mongoQuery.fields(),
+                    mongoQuery.sort(), mongoQuery.pipeline());
         }
     }
 

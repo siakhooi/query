@@ -21,7 +21,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldReturnEmptyList_whenNoStages() {
         // Arrange
-        MongoQuery query = new MongoQuery();
+        MongoQuery query = new MongoQuery(null, null, null, null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -35,8 +35,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldAddMatchStage_whenFilterIsProvided() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("{'status': 'active'}");
+        MongoQuery query = new MongoQuery(null, "{'status': 'active'}", null, null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -52,8 +51,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldAddProjectStage_whenFieldsAreProvided() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFields("{'name': 1, 'age': 1}");
+        MongoQuery query = new MongoQuery(null, null, "{'name': 1, 'age': 1}", null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -71,8 +69,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldAddSortStage_whenSortIsProvided() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setSort("{'createdAt': -1}");
+        MongoQuery query = new MongoQuery(null, null, null, "{'createdAt': -1}", null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -88,9 +85,8 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldParsePipelineStages_whenPipelineIsProvided() {
         // Arrange
-        MongoQuery query = new MongoQuery();
         String pipelineJson = "[{'$match': {'status': 'active'}}, {'$limit': 10}]";
-        query.setPipeline(pipelineJson);
+        MongoQuery query = new MongoQuery(null, null, null, null, pipelineJson);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -113,11 +109,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldHandleEmptyOrWhitespaceValues() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter(" ");
-        query.setFields("");
-        query.setSort("  ");
-        query.setPipeline("");
+        MongoQuery query = new MongoQuery(null, " ", "", "  ", "");
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -131,11 +123,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldHandleNullValues() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter(null);
-        query.setFields(null);
-        query.setSort(null);
-        query.setPipeline(null);
+        MongoQuery query = new MongoQuery(null, null, null, null, null);
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -149,11 +137,12 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldMaintainCorrectOrderOfStages() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("{'status': 'active'}");
-        query.setFields("{'name': 1}");
-        query.setSort("{'createdAt': -1}");
-        query.setPipeline("[{'$limit': 5}]");
+        MongoQuery query = new MongoQuery(
+                null,
+                "{'status': 'active'}",
+                "{'name': 1}",
+                "{'createdAt': -1}",
+                "[{'$limit': 5}]");
 
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
@@ -173,8 +162,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldHandleEmptyPipelineArray() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setPipeline("[]");
+        MongoQuery query = new MongoQuery(null, null, null, null, "[]");
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act
@@ -188,8 +176,7 @@ class MongoPipelineBuilderTest {
     @Test
     void build_shouldThrowExceptionForInvalidPipelineJson() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setPipeline("invalid json");
+        MongoQuery query = new MongoQuery(null, null, null, null, "invalid json");
         MongoPipelineBuilder builder = new MongoPipelineBuilder(query);
 
         // Act & Assert

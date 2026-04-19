@@ -84,8 +84,7 @@ class MongodbDatasourceConnectionTest {
     @Test
     void execute_shouldExecuteAggregation_whenAggregationNeeded() {
         // Arrange
-        MongoQuery query = createBasicQuery();
-        query.setFilter("{status: 'active'}");
+        MongoQuery query = new MongoQuery("testCollection", "{status: 'active'}", null, null, null);
 
         Document testDoc = new Document("name", "test").append("status", "active");
 
@@ -134,7 +133,7 @@ class MongodbDatasourceConnectionTest {
     @Test
     void execute_shouldThrowException_whenQueryIsInvalid() {
         // Arrange
-        MongoQuery query = new MongoQuery(); // Missing collection
+        MongoQuery query = new MongoQuery(null, null, null, null, null); // Missing collection
 
         // Act & Assert
         assertThrows(
@@ -182,8 +181,6 @@ class MongodbDatasourceConnectionTest {
     }
 
     private MongoQuery createBasicQuery() {
-        MongoQuery query = new MongoQuery();
-        query.setCollection("testCollection");
-        return query;
+        return new MongoQuery("testCollection", null, null, null, null);
     }
 }

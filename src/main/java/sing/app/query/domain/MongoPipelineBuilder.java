@@ -17,20 +17,20 @@ public class MongoPipelineBuilder {
     public List<Document> build() {
         List<Document> stages = new ArrayList<>();
 
-        if (isNotBlank(mongoQuery.getFilter())) {
-            stages.add(new Document("$match", Document.parse(mongoQuery.getFilter())));
+        if (isNotBlank(mongoQuery.filter())) {
+            stages.add(new Document("$match", Document.parse(mongoQuery.filter())));
         }
 
-        if (isNotBlank(mongoQuery.getPipeline())) {
-            stages.addAll(parsePipelineArray(mongoQuery.getPipeline()));
+        if (isNotBlank(mongoQuery.pipeline())) {
+            stages.addAll(parsePipelineArray(mongoQuery.pipeline()));
         }
 
-        if (isNotBlank(mongoQuery.getFields())) {
-            stages.add(new Document("$project", Document.parse(mongoQuery.getFields())));
+        if (isNotBlank(mongoQuery.fields())) {
+            stages.add(new Document("$project", Document.parse(mongoQuery.fields())));
         }
 
-        if (isNotBlank(mongoQuery.getSort())) {
-            stages.add(new Document("$sort", Document.parse(mongoQuery.getSort())));
+        if (isNotBlank(mongoQuery.sort())) {
+            stages.add(new Document("$sort", Document.parse(mongoQuery.sort())));
         }
 
         return stages;

@@ -13,7 +13,7 @@ public class MongoQueryValidator {
             throw new IllegalArgumentException("MongoQuery cannot be null");
         }
 
-        String collection = mongoQuery.getCollection();
+        String collection = mongoQuery.collection();
         if (collection == null || collection.isBlank()) {
             throw new IllegalArgumentException("MongoDB query requires 'collection'");
         }
@@ -23,10 +23,10 @@ public class MongoQueryValidator {
         if (mongoQuery == null) {
             return false;
         }
-        return isNotBlank(mongoQuery.getPipeline()) ||
-               isNotBlank(mongoQuery.getFilter()) ||
-               isNotBlank(mongoQuery.getFields()) ||
-               isNotBlank(mongoQuery.getSort());
+        return isNotBlank(mongoQuery.pipeline()) ||
+               isNotBlank(mongoQuery.filter()) ||
+               isNotBlank(mongoQuery.fields()) ||
+               isNotBlank(mongoQuery.sort());
     }
 
     private static boolean isNotBlank(String value) {

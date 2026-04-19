@@ -25,8 +25,7 @@ class MongoQueryValidatorTest {
     @Test
     void validateQuery_shouldThrowException_whenCollectionIsNull() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setCollection(null);
+        MongoQuery query = new MongoQuery(null, null, null, null, null);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
@@ -39,8 +38,7 @@ class MongoQueryValidatorTest {
     @Test
     void validateQuery_shouldThrowException_whenCollectionIsBlank() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setCollection(" ");
+        MongoQuery query = new MongoQuery(" ", null, null, null, null);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
@@ -53,8 +51,7 @@ class MongoQueryValidatorTest {
     @Test
     void validateQuery_shouldNotThrow_whenCollectionIsValid() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setCollection("testCollection");
+        MongoQuery query = new MongoQuery("testCollection", null, null, null, null);
 
         // Act & Assert (should not throw)
         assertDoesNotThrow(() -> MongoQueryValidator.validateQuery(query));
@@ -69,8 +66,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnFalse_whenNoAggregationFieldsAreSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setCollection("test");
+        MongoQuery query = new MongoQuery("test", null, null, null, null);
 
         // Act & Assert
         assertFalse(MongoQueryValidator.shouldUseAggregation(query));
@@ -79,8 +75,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenPipelineIsSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setPipeline("[{$match: {status: 'active'}}]");
+        MongoQuery query = new MongoQuery(null, null, null, null, "[{$match: {status: 'active'}}]");
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
@@ -89,8 +84,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenFilterIsSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("{status: 'active'}");
+        MongoQuery query = new MongoQuery(null, "{status: 'active'}", null, null, null);
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
@@ -99,8 +93,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenFieldsIsSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFields("{name: 1, status: 1}");
+        MongoQuery query = new MongoQuery(null, null, "{name: 1, status: 1}", null, null);
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
@@ -109,8 +102,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenSortIsSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setSort("{createdAt: -1}");
+        MongoQuery query = new MongoQuery(null, null, null, "{createdAt: -1}", null);
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
@@ -119,10 +111,12 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenMultipleFieldsAreSet() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("{status: 'active'}");
-        query.setFields("{name: 1, status: 1}");
-        query.setSort("{createdAt: -1}");
+        MongoQuery query = new MongoQuery(
+                null,
+                "{status: 'active'}",
+                "{name: 1, status: 1}",
+                "{createdAt: -1}",
+                null);
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
@@ -131,10 +125,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnFalse_whenFieldsContainOnlyWhitespace() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("   ");  // Whitespace only
-        query.setFields("  ");   // Whitespace only
-        query.setSort("");       // Empty string
+        MongoQuery query = new MongoQuery(null, "   ", "  ", "", null);
 
         // Act & Assert
         assertFalse(MongoQueryValidator.shouldUseAggregation(query));
@@ -143,8 +134,7 @@ class MongoQueryValidatorTest {
     @Test
     void shouldUseAggregation_shouldReturnTrue_whenFieldsContainContent() {
         // Arrange
-        MongoQuery query = new MongoQuery();
-        query.setFilter("  {}");  // Whitespace with content
+        MongoQuery query = new MongoQuery(null, "  {}", null, null, null);
 
         // Act & Assert
         assertTrue(MongoQueryValidator.shouldUseAggregation(query));
