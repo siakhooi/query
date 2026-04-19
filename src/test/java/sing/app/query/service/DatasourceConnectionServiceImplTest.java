@@ -5,13 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 
 import sing.app.query.config.DatasourceConfig.Connection;
 import sing.app.query.domain.CassandraDatasourceConnection;
@@ -536,6 +545,227 @@ class DatasourceConnectionServiceImplTest {
         Exception ex = assertThrows(Exception.class, () -> testService.getConnection(mockConn));
 
         assertNotNull(ex);
+    }
+
+    @Test
+    void testJdbcConnectionUsesDefaultPoolSettingsWhenOptionalFieldsAreNull() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("jdbc-default-pool");
+        when(mockConn.getType()).thenReturn("jdbc");
+        when(mockConn.getUrl()).thenReturn("jdbc:mariadb://localhost:3306/test");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getMaximumPoolSize()).thenReturn(null);
+        when(mockConn.getMinimumIdle()).thenReturn(null);
+        when(mockConn.getConnectionTimeout()).thenReturn(null);
+        when(mockConn.getIdleTimeout()).thenReturn(null);
+        when(mockConn.getMaxLifetime()).thenReturn(null);
+
+        DatasourceConnection result = service.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof JdbcDatasourceConnection);
+    }
+
+    @Test
+    void testMongodbConnectionSkipsCredentialWhenUsernameIsNull() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongo-no-user");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getDatabase()).thenReturn("testdb");
+        when(mockConn.getUsername()).thenReturn(null);
+        when(mockConn.getPassword()).thenReturn(null);
+
+        DatasourceConnection result = service.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof MongodbDatasourceConnection);
+    }
+
+    @Test
+    void testMongodbConnectionSkipsCredentialWhenUsernameIsEmpty() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongo-empty-user");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getDatabase()).thenReturn("testdb");
+        when(mockConn.getUsername()).thenReturn("");
+        when(mockConn.getPassword()).thenReturn("ignored");
+
+        DatasourceConnection result = service.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof MongodbDatasourceConnection);
+    }
+
+    @Test
+    void testMongodbConnectionUsesAdminWhenDatabaseNullForCredentialThenRequiresDatabaseName() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongo-null-db");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getDatabase()).thenReturn(null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.getConnection(mockConn));
+
+        assertTrue(ex.getMessage().contains("Database name is required"));
+    }
+
+    @Test
+    void testMongodbConnectionWithUsernameAndNullPasswordUsesEmptyCharArrayForCredential() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongo-null-pass");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn(null);
+        when(mockConn.getDatabase()).thenReturn("testdb");
+
+        DatasourceConnection result = service.getConnection(mockConn);
+
+        assertNotNull(result);
+        assertTrue(result instanceof MongodbDatasourceConnection);
+    }
+
+    @Test
+    void testMongodbConnectionEmptyDatabaseThrows() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("mongo-empty-db");
+        when(mockConn.getType()).thenReturn("mongodb");
+        when(mockConn.getUrl()).thenReturn("mongodb://localhost:27017");
+        when(mockConn.getUsername()).thenReturn(null);
+        when(mockConn.getDatabase()).thenReturn("");
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.getConnection(mockConn));
+
+        assertTrue(ex.getMessage().contains("Database name is required"));
+    }
+
+    @Test
+    void testCassandraBuildSessionReturnsWhenCqlSessionBuilderSucceeds() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-mock-build");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn("dc1");
+        when(mockConn.getUsername()).thenReturn(null);
+        when(mockConn.getPassword()).thenReturn(null);
+        when(mockConn.getKeyspace()).thenReturn(null);
+
+        CqlSessionBuilder builder = mock(CqlSessionBuilder.class);
+        CqlSession session = mock(CqlSession.class);
+        when(builder.addContactPoint(any(InetSocketAddress.class))).thenReturn(builder);
+        when(builder.withLocalDatacenter(anyString())).thenReturn(builder);
+        when(builder.build()).thenReturn(session);
+
+        DatasourceConnectionServiceImpl impl = new DatasourceConnectionServiceImpl();
+        try (MockedStatic<CqlSession> cql = mockStatic(CqlSession.class)) {
+            cql.when(CqlSession::builder).thenReturn(builder);
+            DatasourceConnection result = impl.getConnection(mockConn);
+            assertTrue(result instanceof CassandraDatasourceConnection);
+        }
+    }
+
+    @Test
+    void testCassandraBuildSessionWithAuthKeyspaceAndNullPassword() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-mock-auth-ks");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn("dc1");
+        when(mockConn.getUsername()).thenReturn("user");
+        when(mockConn.getPassword()).thenReturn(null);
+        when(mockConn.getKeyspace()).thenReturn("ks1");
+
+        CqlSessionBuilder builder = mock(CqlSessionBuilder.class);
+        CqlSession session = mock(CqlSession.class);
+        when(builder.addContactPoint(any(InetSocketAddress.class))).thenReturn(builder);
+        when(builder.withLocalDatacenter(anyString())).thenReturn(builder);
+        when(builder.withAuthCredentials(eq("user"), eq(""))).thenReturn(builder);
+        when(builder.withKeyspace(eq("ks1"))).thenReturn(builder);
+        when(builder.build()).thenReturn(session);
+
+        DatasourceConnectionServiceImpl impl = new DatasourceConnectionServiceImpl();
+        try (MockedStatic<CqlSession> cql = mockStatic(CqlSession.class)) {
+            cql.when(CqlSession::builder).thenReturn(builder);
+            DatasourceConnection result = impl.getConnection(mockConn);
+            assertTrue(result instanceof CassandraDatasourceConnection);
+        }
+    }
+
+    @Test
+    void testCassandraBuildSessionSkipsAuthWhenUsernameIsWhitespaceOnly() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-mock-blank-user");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn("dc1");
+        when(mockConn.getUsername()).thenReturn("   ");
+        when(mockConn.getPassword()).thenReturn("pass");
+        when(mockConn.getKeyspace()).thenReturn(null);
+
+        CqlSessionBuilder builder = mock(CqlSessionBuilder.class);
+        CqlSession session = mock(CqlSession.class);
+        when(builder.addContactPoint(any(InetSocketAddress.class))).thenReturn(builder);
+        when(builder.withLocalDatacenter(anyString())).thenReturn(builder);
+        when(builder.build()).thenReturn(session);
+
+        DatasourceConnectionServiceImpl impl = new DatasourceConnectionServiceImpl();
+        try (MockedStatic<CqlSession> cql = mockStatic(CqlSession.class)) {
+            cql.when(CqlSession::builder).thenReturn(builder);
+            DatasourceConnection result = impl.getConnection(mockConn);
+            assertTrue(result instanceof CassandraDatasourceConnection);
+        }
+    }
+
+    @Test
+    void testCassandraBuildSessionSkipsKeyspaceWhenKeyspaceIsWhitespaceOnly() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-mock-blank-ks");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://localhost:9042");
+        when(mockConn.getDatacenter()).thenReturn("dc1");
+        when(mockConn.getUsername()).thenReturn(null);
+        when(mockConn.getPassword()).thenReturn(null);
+        when(mockConn.getKeyspace()).thenReturn(" \t ");
+
+        CqlSessionBuilder builder = mock(CqlSessionBuilder.class);
+        CqlSession session = mock(CqlSession.class);
+        when(builder.addContactPoint(any(InetSocketAddress.class))).thenReturn(builder);
+        when(builder.withLocalDatacenter(anyString())).thenReturn(builder);
+        when(builder.build()).thenReturn(session);
+
+        DatasourceConnectionServiceImpl impl = new DatasourceConnectionServiceImpl();
+        try (MockedStatic<CqlSession> cql = mockStatic(CqlSession.class)) {
+            cql.when(CqlSession::builder).thenReturn(builder);
+            DatasourceConnection result = impl.getConnection(mockConn);
+            assertTrue(result instanceof CassandraDatasourceConnection);
+        }
+    }
+
+    @Test
+    void testCassandraBuildSessionRejectsNonNullBlankHost() {
+        Connection mockConn = mock(Connection.class);
+        when(mockConn.getName()).thenReturn("cass-blank-host");
+        when(mockConn.getType()).thenReturn("cassandra");
+        when(mockConn.getUrl()).thenReturn("cassandra://placeholder:9042");
+        when(mockConn.getDatacenter()).thenReturn("dc1");
+
+        URI parsed = mock(URI.class);
+        when(parsed.getScheme()).thenReturn("cassandra");
+        when(parsed.getHost()).thenReturn("");
+        when(parsed.getPort()).thenReturn(9042);
+
+        try (MockedStatic<URI> uriStatic = mockStatic(URI.class)) {
+            uriStatic.when(() -> URI.create(anyString())).thenReturn(parsed);
+
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> service.getConnection(mockConn));
+
+            assertTrue(ex.getMessage().contains("must include a host"));
+        }
     }
 
     static class TestableDatasourceConnectionServiceImpl extends DatasourceConnectionServiceImpl {
