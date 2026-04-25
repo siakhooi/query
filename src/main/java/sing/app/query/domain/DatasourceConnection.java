@@ -9,4 +9,6 @@ public sealed interface DatasourceConnection permits JdbcDatasourceConnection, M
 
     List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery);
 
+    /** Close underlying client/pool; required when config is reloaded (e.g. K8s Secret change). */
+    void close();
 }

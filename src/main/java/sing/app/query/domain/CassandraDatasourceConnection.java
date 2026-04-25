@@ -25,6 +25,11 @@ public final class CassandraDatasourceConnection implements DatasourceConnection
 
     private final CqlSession session;
 
+    @Override
+    public void close() {
+        session.close();
+    }
+
     /**
      * Executes a Cassandra CQL query and returns the results.
      *

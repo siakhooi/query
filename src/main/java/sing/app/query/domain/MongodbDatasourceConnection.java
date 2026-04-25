@@ -22,6 +22,11 @@ public final class MongodbDatasourceConnection implements DatasourceConnection {
     private final String databaseName;
 
     @Override
+    public void close() {
+        mongoClient.close();
+    }
+
+    @Override
     public List<Map<String, Object>> execute(String queryString, MongoQuery mongoQuery) {
         logQueryExecution(mongoQuery);
         MongoQueryValidator.validateQuery(mongoQuery);

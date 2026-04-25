@@ -1,0 +1,7 @@
+# Tests must not rely on main/test YAML merge for spring.config.import (import would be missing
+# and query/datasource end up empty). Import the same resources as the "local" profile.
+spring:
+  config:
+    import:
+      - query.yaml
+      - optional:classpath:datasource.yaml

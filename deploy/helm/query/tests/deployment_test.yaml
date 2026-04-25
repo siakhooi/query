@@ -28,6 +28,21 @@ tests:
   - it: default
     asserts:
       - equal:
+          path: spec.template.spec.volumes[1].name
+          value: datasource-config
+      - equal:
+          path: spec.template.spec.volumes[1].secret.secretName
+          value: query-datasource
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].name
+          value: datasource-config
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].mountPath
+          value: /config
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].readOnly
+          value: true
+      - equal:
           path: spec.replicas
           value: 1
       - equal:

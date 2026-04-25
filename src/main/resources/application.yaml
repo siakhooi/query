@@ -18,7 +18,19 @@ logging:
     "sing.app.query": DEBUG
 
 spring:
+  # query: classpath. Datasource: Secret mounted at /config (Helm) so `spring.config.import` binds
+  # like normal YAML. Relying only on the K8s client PropertySource often leaves datasource.* empty.
   config:
     import:
-      - datasource.yaml
       - query.yaml
+      - optional:file:/config/datasource.yaml
+  cloud:
+    refresh:
+      enabled: true
+---
+# Demo/example datasources for local or tests only (see src/test/resources)
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: optional:classpath:datasource.yaml

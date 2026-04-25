@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.cloud.endpoint.event.RefreshEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -29,7 +31,20 @@ import sing.app.query.domain.MongodbDatasourceConnection;
 @Service
 @Slf4j
 public class DatasourceConnectionServiceImpl implements DatasourceConnectionService {
-    private Map<String, DatasourceConnection> connections = new HashMap<>();
+    private final Map<String, DatasourceConnection> connections = new HashMap<>();
+
+    @EventListener(RefreshEvent.class)
+    public void onConfigRefresh(RefreshEvent event) {
+        log.info("Config refresh; evicting and closing cached datasource clients");
+        for (var e : new java.util.ArrayList<>(connections.entrySet())) {
+            try {
+                e.getValue().close();
+            } catch (Exception ex) {
+                log.warn("Error closing connection {}: {}", e.getKey(), ex.getMessage());
+            }
+        }
+        connections.clear();
+    }
 
     @Override
     public DatasourceConnection getConnection(Connection connection) {
