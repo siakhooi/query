@@ -18,7 +18,7 @@ jobs:
           path: ./
 
       - run: ls -l
-      - run: cat release.env >> $GITHUB_ENV
+      - run: cat release-build.env >> $GITHUB_ENV
 
       - uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # 2.11.5
         with:

@@ -16,7 +16,7 @@ jobs:
           java-version: '25'
 
       - run: mvn verify
-      - run: cat release.env >> $GITHUB_ENV
+      - run: cat release-build.env >> $GITHUB_ENV
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:

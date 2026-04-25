@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - run: cat release.env >> $GITHUB_ENV
+      - run: cat release-build.env >> $GITHUB_ENV
       - run: helm lint deploy/helm/${{ env.HELM_CHART_NAME }}/
       - run: helm template ${{ env.HELM_CHART_NAME }}-release-1 deploy/helm/${{ env.HELM_CHART_NAME }}/
       - run: helm plugin install https://github.com/helm-unittest/helm-unittest.git

@@ -2,9 +2,9 @@
 set -e
 
 # shellcheck disable=SC1091
-. ./release.env
+. ./release-build.env
 # shellcheck disable=SC1091
-. ./release-docker.env
+. ./release.env
 
 mvn versions:set -DnewVersion="$MAVEN_JAR_VERSION"
 
