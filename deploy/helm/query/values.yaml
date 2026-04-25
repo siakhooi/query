@@ -22,25 +22,25 @@ deployment:
 
   readinessProbe:
     enabled: true              # enable the readinessProbe
-#   initialDelaySeconds: 10
-#   periodSeconds: 5
-#   timeoutSeconds: 1
-#   successThreshold: 1
-#   failureThreshold: 1
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 1
   livenessProbe:
     enabled: true              # enable the livenessProbe
-#   initialDelaySeconds: 10
-#   periodSeconds: 5
-#   timeoutSeconds: 1
-#   successThreshold: 1
-#   failureThreshold: 1
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 1
   startupProbe:
     enabled: true              # enable the startupProbe
-#   initialDelaySeconds: 10
-#   periodSeconds: 5
-#   timeoutSeconds: 1
-#   successThreshold: 1
-#   failureThreshold: 10
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 10
 
   securityContext:
 #   pod:

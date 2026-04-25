@@ -51,41 +51,46 @@ spec:
               value: "true"
             - name: spring.cloud.bootstrap.enabled
               value: "true"
-{{- if .Values.deployment.readinessProbe.enabled }}
+{{- with .Values.deployment }}
+{{- with .readinessProbe }}
+{{- if .enabled }}
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
               scheme: HTTP
-            initialDelaySeconds: {{ (.Values.deployment.readinessProbe.initialDelaySeconds) | default 10 }}
-            periodSeconds: {{ (.Values.deployment.readinessProbe.periodSeconds) | default 5 }}
-            timeoutSeconds: {{ (.Values.deployment.readinessProbe.timeoutSeconds) | default 1 }}
-            successThreshold: {{ (.Values.deployment.readinessProbe.successThreshold) | default 1 }}
-            failureThreshold: {{ (.Values.deployment.readinessProbe.failureThreshold) | default 1 }}
+{{- $readinessOpts := omit . "enabled" }}
+{{- if not (empty $readinessOpts) }}
+            {{- toYaml $readinessOpts | nindent 12 }}
 {{- end }}
-{{- if .Values.deployment.livenessProbe.enabled  }}
+{{- end }}
+{{- end }}
+{{- with .livenessProbe }}
+{{- if .enabled }}
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
               scheme: HTTP
-            initialDelaySeconds: {{ (.Values.deployment.livenessProbe.initialDelaySeconds) | default 10 }}
-            periodSeconds: {{ (.Values.deployment.livenessProbe.periodSeconds) | default 5 }}
-            timeoutSeconds: {{ (.Values.deployment.livenessProbe.timeoutSeconds) | default 1 }}
-            successThreshold: {{ (.Values.deployment.livenessProbe.successThreshold) | default 1 }}
-            failureThreshold: {{ (.Values.deployment.livenessProbe.failureThreshold) | default 1 }}
+{{- $livenessOpts := omit . "enabled" }}
+{{- if not (empty $livenessOpts) }}
+            {{- toYaml $livenessOpts | nindent 12 }}
 {{- end }}
-{{- if .Values.deployment.startupProbe.enabled }}
+{{- end }}
+{{- end }}
+{{- with .startupProbe }}
+{{- if .enabled }}
           startupProbe:
             httpGet:
               path: /actuator/health
               port: 8080
               scheme: HTTP
-            initialDelaySeconds: {{ (.Values.deployment.startupProbe.initialDelaySeconds) | default 10 }}
-            periodSeconds: {{ (.Values.deployment.startupProbe.periodSeconds) | default 5 }}
-            timeoutSeconds: {{ (.Values.deployment.startupProbe.timeoutSeconds) | default 1 }}
-            successThreshold: {{ (.Values.deployment.startupProbe.successThreshold) | default 1 }}
-            failureThreshold: {{ (.Values.deployment.startupProbe.failureThreshold) | default 1 }}
+{{- $startupOpts := omit . "enabled" }}
+{{- if not (empty $startupOpts) }}
+            {{- toYaml $startupOpts | nindent 12 }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- if .Values.deployment.resources  }}
