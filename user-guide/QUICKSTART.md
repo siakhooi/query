@@ -87,7 +87,7 @@ curl http://localhost:8080/actuator/health
 
 ## Using Pre-built JAR
 
-If you have Java 17+ installed:
+If you have Java 25+ installed:
 
 ```bash
 # Download the latest JAR from GitHub releases
@@ -95,7 +95,7 @@ If you have Java 17+ installed:
 mvn clean verify
 
 # Run
-java -jar target/query-0.13.0.jar
+java -jar target/query-0.21.0.jar
 
 # Test
 curl http://localhost:8080/actuator/health
@@ -117,6 +117,8 @@ kubectl port-forward service/my-query 8080:80
 # Test
 curl http://localhost:8080/actuator/health
 ```
+
+On Kubernetes, query and datasource settings from the chart are **reloaded after `helm upgrade`** without restarting the pod (Spring Cloud Kubernetes). Custom values, probes, and `securityContext` are covered in the [Usage Guide](USAGE.md#running-with-helm-chart).
 
 ## Sample Endpoints
 

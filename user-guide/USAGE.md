@@ -55,7 +55,7 @@ cd query
 mvn clean verify
 
 # The JAR file will be created in the target directory
-# Example: target/query-0.13.0.jar
+# Example: target/query-0.21.0.jar
 ```
 
 ### 2. Configure the Application
@@ -71,14 +71,14 @@ See [Configuration](#configuration) section for details.
 
 ```bash
 # Run with default configuration
-java -jar target/query-0.13.0.jar
+java -jar target/query-0.21.0.jar
 
 # Run with custom configuration files
-java -jar target/query-0.13.0.jar \
+java -jar target/query-0.21.0.jar \
   --spring.config.additional-location=file:../config/
 
 # Run with specific profile
-java -jar target/query-0.13.0.jar --spring.profiles.active=production
+java -jar target/query-0.21.0.jar --spring.profiles.active=production
 ```
 
 The service will start on port 8080 by default.
@@ -295,7 +295,7 @@ deployment:
   image:
     # Optional: defaults to siakhooi/query — set to your registry path or retagged image name
     # repository: my-registry.example.com/team/query
-    tag: "0.13.0"
+    tag: "0.21.0"
 
   resources:
     limits:
@@ -305,12 +305,38 @@ deployment:
       cpu: "500m"
       memory: 512Mi
 
+  # HTTP probes hit /actuator/health on container port 8080. Omit timing keys to use chart defaults.
   readinessProbe:
     enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 1
   livenessProbe:
     enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 1
   startupProbe:
     enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 10
+
+  # Optional: pod-level securityContext (fsGroup, runAsUser, …) — see chart values.yaml
+  # securityContext:
+  #   pod:
+  #     runAsUser: 10002
+  #     runAsGroup: 10001
+  #     fsGroup: 10001
+  #   container:   # merged into the container; chart defaults include readOnlyRootFilesystem, runAsNonRoot, capabilities.drop [ALL], seccompProfile RuntimeDefault
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
 
 # Custom datasource configuration
 default_datasource_yaml:
@@ -336,6 +362,8 @@ default_query_yaml:
 
 The deployment image is `deployment.image.repository` plus `deployment.image.tag`. The default repository is `siakhooi/query`. Set `deployment.image.repository` when you use a private registry, a retagged image, or a derived build (for example `registry.example.com/team/query-mirror`).
 
+The chart sets a **container** `securityContext` by default (non-root, read-only root filesystem, dropped capabilities, `seccompProfile: RuntimeDefault`) and mounts an `emptyDir` at `/tmp` so the JVM can write temp files. Override or extend this under `deployment.securityContext.pod` and `deployment.securityContext.container` (both optional YAML blobs merged into the pod spec). See the chart’s `values.yaml` on [Artifact Hub](https://artifacthub.io/packages/helm/siakhooi/query) for the full default.
+
 Install with custom values:
 
 ```bash
@@ -348,13 +376,21 @@ helm install my-query siakhooi/query -f custom-values.yaml
 helm upgrade my-query siakhooi/query -f custom-values.yaml
 ```
 
-### 5. Uninstall
+### 5. Updating configuration on Kubernetes (reload)
+
+With the stock Helm deployment, Spring Cloud Kubernetes is enabled on the pod. Configuration from the chart-managed **ConfigMap** (`query-query`, key `query.yaml`) and **Secret** (`query-datasource`, key `datasource.yaml`) is watched with a **polling** reload strategy (see `src/main/resources/bootstrap.yml` in this repository; default interval is on the order of tens of seconds).
+
+After you change `default_query_yaml` or `default_datasource_yaml` and run `helm upgrade`, the updated objects appear in the cluster and the application **refreshes without restarting the pod** in normal cases. The chart’s **Role** allows `get`, `list`, and `watch` on `configmaps`, `secrets`, and `pods` so that reload can run.
+
+For local runs, Docker, or when you need a one-shot refresh outside that path, `POST /actuator/refresh` remains available (see [Monitoring Endpoints](#monitoring-endpoints)).
+
+### 6. Uninstall
 
 ```bash
 helm uninstall my-query
 ```
 
-### 6. Access the Service
+### 7. Access the Service
 
 ```bash
 # Port forward to access locally
@@ -679,7 +715,8 @@ curl http://localhost:8080/actuator | jq
 # View application metrics
 curl http://localhost:8080/actuator/metrics | jq
 
-# Refresh configuration (after changes)
+# Refresh configuration (after file or env changes outside Spring Cloud Kubernetes)
+# On Kubernetes with the official Helm chart, ConfigMap/Secret updates are picked up automatically; see "Updating configuration on Kubernetes" in the Helm section.
 curl -X POST http://localhost:8080/actuator/refresh
 ```
 

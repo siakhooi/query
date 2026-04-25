@@ -15,12 +15,14 @@ The fastest way to get started:
 
 ```bash
 cd user-guide
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start:
 - MariaDB with sample fruit data
 - PostgreSQL with sample animal data
+- MongoDB with sample book data
+- Cassandra with sample metrics data
 - Query microservice on port 8080
 
 ## File Structure
@@ -64,8 +66,8 @@ Comprehensive guide that covers:
 - API testing and monitoring
 
 ### docker-compose.yml
-Production-ready Docker Compose file that:
-- Sets up MariaDB and PostgreSQL databases
+Docker Compose file that:
+- Sets up MariaDB, PostgreSQL, MongoDB, and Cassandra with sample data
 - Configures the Query microservice
 - Includes health checks
 - Auto-initializes sample data

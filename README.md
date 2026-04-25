@@ -16,7 +16,7 @@ microservice to query backend databases
 - Running the JAR
 - Running with Docker
 - Running with Docker Compose
-- Running with Helm Chart
+- Running with Helm Chart (defaults for `securityContext` and probes, plus ConfigMap/Secret reload on `helm upgrade`)
 - Configuration examples
 - Sample data setup
 
@@ -48,7 +48,6 @@ microservice to query backend databases
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/siakhooi/query?logo=github)
 ![GitHub top language](https://img.shields.io/github/languages/top/siakhooi/query?logo=github)
 ![GitHub language count](https://img.shields.io/github/languages/count/siakhooi/query?logo=github)
-![Lines of code](https://img.shields.io/tokei/lines/github/siakhooi/query?logo=github)
 ![GitHub repo size](https://img.shields.io/github/repo-size/siakhooi/query?logo=github)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/siakhooi/query?logo=github)
 ![Workflow](https://img.shields.io/badge/Workflow-github-purple)
@@ -84,6 +83,5 @@ microservice to query backend databases
 ![Sonar Violations (short format)](https://img.shields.io/sonar/info_violations/siakhooi_query?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Violations (long format)](https://img.shields.io/sonar/violations/siakhooi_query?format=long&server=http%3A%2F%2Fsonarcloud.io)
 
-[![Generic badge](https://img.shields.io/badge/Funding-BuyMeACoffee-33cb56.svg)](https://www.buymeacoffee.com/siakhooi)
-[![Generic badge](https://img.shields.io/badge/Funding-Ko%20Fi-33cb56.svg)](https://ko-fi.com/siakhooi)
+[![Wise](https://img.shields.io/badge/Funding-Wise-33cb56.svg?logo=wise)](https://wise.com/pay/me/siakn3)
 ![visitors](https://hit-tztugwlsja-uc.a.run.app/?outputtype=badge&counter=ghmd-query)
