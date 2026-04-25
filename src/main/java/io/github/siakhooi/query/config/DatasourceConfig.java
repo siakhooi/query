@@ -1,0 +1,92 @@
+package io.github.siakhooi.query.config;
+
+import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
+@Configuration
+@Data
+@Validated
+@Slf4j
+@ConfigurationProperties(prefix = "datasource")
+public class DatasourceConfig {
+
+    @NotNull
+    @Size(min = 1)
+    private List<Connection> connections = new java.util.ArrayList<>();
+
+    @Data
+    public static class Connection {
+        @NotBlank
+        @JsonInclude(Include.NON_NULL)
+        private String name;
+
+        @NotBlank
+        @JsonInclude(Include.NON_NULL)
+        private String type;
+
+        @NotBlank
+        @JsonIgnore
+        private String url;
+
+        @JsonInclude(Include.NON_NULL)
+        private String username;
+
+        @JsonIgnore
+        private String password;
+
+        // MongoDB specific property
+        @JsonInclude(Include.NON_NULL)
+        private String database;
+
+        // Cassandra specific properties
+        @JsonInclude(Include.NON_NULL)
+        private String datacenter;
+
+        @JsonInclude(Include.NON_NULL)
+        private String keyspace;
+
+        // HikariCP pool configuration properties
+        @JsonInclude(Include.NON_NULL)
+        private Integer maximumPoolSize;
+
+        @JsonInclude(Include.NON_NULL)
+        private Integer minimumIdle;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long connectionTimeout;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long idleTimeout;
+
+        @JsonInclude(Include.NON_NULL)
+        private Long maxLifetime;
+
+    }
+
+    public Connection getConnection(String connection, String queryName)
+            throws DatasourceConfigException {
+        List<Connection> matchedConnections = getConnections().stream()
+                .filter(conn -> conn.getName().equals(connection)).toList();
+
+        if (matchedConnections.isEmpty()) {
+            log.warn("No connections found for query: {}", queryName);
+            throw new DatasourceConfigException(String.format("No connections found for query: %s", queryName));
+        }
+        if (matchedConnections.size() > 1) {
+            log.warn("Multiple connections found for query: {}", queryName);
+            throw new DatasourceConfigException(
+                    String.format("Multiple connections found for query: %s", queryName));
+        }
+        return matchedConnections.getFirst();
+    }
+}

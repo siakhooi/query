@@ -9,7 +9,7 @@
 		<version>4.0.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>sing.app</groupId>
+	<groupId>io.github.siakhooi</groupId>
 	<artifactId>query</artifactId>
 	<version>0.21.0</version>
 	<name>Query</name>

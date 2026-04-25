@@ -18,7 +18,7 @@ logging:
   level:
     "org.springframework.cloud.kubernetes": INFO
     "org.springframework.web": INFO
-    "sing.app.query": INFO
+    "io.github.siakhooi.query": INFO
 
 spring:
   config:

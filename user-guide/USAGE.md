@@ -145,7 +145,7 @@ You can also override individual settings using environment variables:
 docker run --rm -p 8080:8080 \
   -v $(pwd)/../config:/config:ro \
   -e SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/ \
-  -e LOGGING_LEVEL_SING_APP_QUERY=DEBUG \
+  -e LOGGING_LEVEL_IO_GITHUB_SIAKHOOI_QUERY=DEBUG \
   siakhooi/query:latest
 ```
 
@@ -421,7 +421,7 @@ logging:
   level:
     "org.springframework.cloud.kubernetes": DEBUG
     "org.springframework.web": DEBUG
-    "sing.app.query": DEBUG
+    "io.github.siakhooi.query": DEBUG
 
 spring:
   config:
@@ -742,7 +742,7 @@ curl -X POST http://localhost:8080/actuator/refresh
 Enable debug logging:
 
 ```bash
-java -jar query.jar --logging.level.sing.app.query=DEBUG
+java -jar query.jar --logging.level.io.github.siakhooi.query=DEBUG
 ```
 
 Or add to `application.yaml`:
@@ -750,7 +750,7 @@ Or add to `application.yaml`:
 ```yaml
 logging:
   level:
-    "sing.app.query": DEBUG
+    "io.github.siakhooi.query": DEBUG
 ```
 
 ## Additional Resources
