@@ -13,9 +13,9 @@ management:
 
 logging:
   level:
-    "org.springframework.cloud.kubernetes": DEBUG
-    "org.springframework.web": DEBUG
-    "sing.app.query": DEBUG
+    "org.springframework.cloud.kubernetes": INFO
+    "org.springframework.web": INFO
+    "sing.app.query": INFO
 
 spring:
   # query: classpath. Datasource: Secret mounted at /config (Helm) so `spring.config.import` binds
