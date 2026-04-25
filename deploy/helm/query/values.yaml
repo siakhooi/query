@@ -1,7 +1,3 @@
-# dummy place holder, no longer in used
-app:
-  defaultGreetingMessage: Earth
-
 deployment:
 
 # replicaCount: 1              # set the deployment spec.replicas
