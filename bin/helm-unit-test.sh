@@ -3,6 +3,8 @@
 set -euxo pipefail
 
 # shellcheck disable=SC1091
+. ./release-build.env
+# shellcheck disable=SC1091
 . ./release.env
 
 readonly output_file="${PWD}/helm-unit-test.xml"

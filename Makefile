@@ -1,22 +1,4 @@
 help:
-# make all     : build
-# make clean   : clean
-# make git-push: commit and push
-# make release : create release
-
-# make test	    : run tests
-# make run	    : run the application
-# make curl-env : test endpoints
-
-# make docker-run: run docker image
-# make curl-env  : test endpoints
-
-# k3d-up
-# make helm-install
-# make k-pf
-# make curl-env
-
-
 all: setversion build docker-build helm-build
 
 clean:
@@ -28,8 +10,6 @@ build:
 	bin/build.sh
 docker-build:
 	bin/docker-build.sh
-commit:
-	bin/git-commit-and-push.sh
 release:
 	bin/create-release.sh
 
@@ -67,32 +47,8 @@ curl-q3:
 curl-q4:
 	curl --no-progress-meter http://localhost:8080/query/all |jq
 
-secrets:
-#	datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1GQUxTRQ==
-#   datasource: ZGF0YXNvdXJjZToKICBjb25uZWN0aW9uczoKICAtIG5hbWU6IGluLW1lbW9yeQogICAgdXJsOiBqZGJjOmgyOm1lbTp0ZXN0ZGI7REJfQ0xPU0VfREVMQVk9LTE7REJfQ0xPU0VfT05fRVhJVD1UUlVF
-
 docker-run:
 	docker run --rm -p 8080:8080 siakhooi/query:latest
-# docker-inspect:
-# 	docker inspect siakhooi/query:latest
-# docker-get-base-digest:
-# 	docker inspect eclipse-temurin:21.0.2_13-jre-alpine | jq -r '.[].Id'
-# curl-actuator:
-# 	curl --no-progress-meter http://localhost:8080/actuator |jq
-# curl-actuator-health:
-# 	curl http://localhost:8080/actuator/health
-# curl-actuator-shutdown:
-# 	curl -X POST http://localhost:8080/actuator/shutdown
-# curl-springdoc-api:
-# 	curl --no-progress-meter http://localhost:8080/v3/api-docs
-# curl-springdoc-api-ui:
-# 	curl --no-progress-meter http://localhost:8080/swagger-ui.html
-
-# helm-create:
-# 	mkdir -p deploy/helm
-# 	cd deploy/helm
-# 	helm create query
-
 helm-lint:
 	helm lint deploy/helm/query/
 helm-template:
@@ -111,17 +67,8 @@ helm-uninstall:
 
 k-pf:
 	shed-kubectl port-forward service/hello1-query 8080:80
-# k-create-configmap:
-# 	k create configmap hello-spring-boot-microservice --from-literal=app.defaultGreetingMessage=Wakanda
-# k-get-cm:
-# 	shed-kubectl get cm/query -o yaml
-# k-edit-cm:
-# 	shed-kubectl edit cm/query
 
 helm-unit-test-install:
 	helm plugin install https://github.com/helm-unittest/helm-unittest.git
 k3d-load-image:
 	k3d-image-import siakhooi/query:0.5.0
-
-zootopia-load-image:
- 	zootopia-load-docker-images siakhooi/query:latest

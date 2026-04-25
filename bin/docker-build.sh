@@ -3,9 +3,9 @@
 set -euxo pipefail
 
 # shellcheck disable=SC1091
-. ./release.env
+. ./release-build.env
 # shellcheck disable=SC1091
-. ./release-docker.env
+. ./release.env
 
 (
 	cp target/"${JAR_NAME}-${MAVEN_JAR_VERSION}.jar" .
