@@ -43,15 +43,21 @@ deployment:
 #   failureThreshold: 10
 
   securityContext:
-     enabled: true            # enable securityContext
-#    runAsUser: 10000
-#    runAsGroup: 10000
-#    fsGroup: 10000
-#    fsGroupChangePolicy: "OnRootMismatch"
-#    allowPrivilegeEscalation: false
-#    privileged: false
-#    readOnlyRootFilesystem: true
-#    runAsNonRoot: true
+#   pod:
+#     runAsUser: 10002
+#     runAsGroup: 10001
+#     fsGroup: 10001
+#     fsGroupChangePolicy: "OnRootMismatch"
+    container:
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
 
 #podDisruptionBudget:   # default - not specified
 #  maxUnavailable: 1    # mutual exclusive

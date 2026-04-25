@@ -33,9 +33,17 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: IfNotPresent
+      - notExists:
+          path: spec.template.spec.securityContext
       - equal:
-          path: spec.template.spec.containers[0].securityContext.runAsUser
-          value: 10000
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop[0]
+          value: ALL
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: RuntimeDefault
   - it: imagePullPolicy
     set:
       deployment.image.pullPolicy: Always
@@ -52,15 +60,18 @@ tests:
           value: 5
   - it: custom securityContext
     set:
-      deployment.securityContext.runAsUser: 999
+      deployment.securityContext.pod.runAsUser: 999
     asserts:
       - equal:
-          path: spec.template.spec.containers[0].securityContext.runAsUser
+          path: spec.template.spec.securityContext.runAsUser
           value: 999
-  - it: securityContext disabled
+  - it: no securityContext when pod and container unset
     set:
-      deployment.securityContext.enabled: false
+      deployment.securityContext.pod: null
+      deployment.securityContext.container: null
     asserts:
+      - notExists:
+          path: spec.template.spec.securityContext
       - notExists:
           path: spec.template.spec.containers[0].securityContext
   - it: readinessProbe disabled

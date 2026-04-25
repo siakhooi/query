@@ -19,10 +19,26 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+{{- with .Values.deployment }}
+{{- with .securityContext }}
+{{- with .pod }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}
+{{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ include "image-name" . }}:{{ .Values.deployment.image.tag }}
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy | default "IfNotPresent" }}
+{{- with .Values.deployment }}
+{{- with .securityContext }}
+{{- with .container }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+{{- end }}
+{{- end }}
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -35,17 +51,6 @@ spec:
               value: "true"
             - name: spring.cloud.bootstrap.enabled
               value: "true"
-{{- if .Values.deployment.securityContext.enabled }}
-          securityContext:
-             runAsUser:  {{ (.Values.deployment.securityContext.runAsUser) | default 10000 }}
-             runAsGroup:  {{ (.Values.deployment.securityContext.runAsGroup) | default 10000 }}
-             fsGroup:  {{ (.Values.deployment.securityContext.fsGroup) | default 10000 }}
-             fsGroupChangePolicy:  {{ (.Values.deployment.securityContext.fsGroupChangePolicy) | default "OnRootMismatch" }}
-             allowPrivilegeEscalation:  {{ (.Values.deployment.securityContext.allowPrivilegeEscalation) | default false }}
-             privileged:  {{ (.Values.deployment.securityContext.privileged) | default false }}
-             readOnlyRootFilesystem:  {{ (.Values.deployment.securityContext.readOnlyRootFilesystem) | default true }}
-             runAsNonRoot:  {{ (.Values.deployment.securityContext.runAsNonRoot) | default true }}
-{{- end }}
 {{- if .Values.deployment.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
