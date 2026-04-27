@@ -18,7 +18,7 @@ jobs:
           name: helm-chart
           path: ./
 
-      - uses: siakhooi/publish-to-repo-action@e9cd5cd0ba58db2b79bf8a3d4ed4ef57ef276ab5 # v0.1.0
+      - uses: siakhooi/publish-to-repo-action@7867fe051bf2d37ac664f0da4286deb2f0937430 # v0.3.0
         with:
           token: ${{ secrets.PUBLISH_TO_GITHUB_REPO_TOKEN }}
           config-file: publish-to-helm-charts.yml
