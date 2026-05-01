@@ -21,7 +21,3 @@ sed -i "deploy/helm/$HELM_CHART_NAME/Chart.yaml" -e 's@appVersion:.*@appVersion:
 sed -i "deploy/helm/$HELM_CHART_NAME/Chart.yaml" -e 's@version:.*@version: '"$HELM_CHART_VERSION"'@g'
 
 sed -i "deploy/helm/$HELM_CHART_NAME/values.yaml" -e 's@    tag:.*@    tag: "'"$DOCKER_VERSION"'"@g'
-
-# Update publish-to-helm-charts.yml
-sed -i 'publish-to-helm-charts.yml' -e 's@query-[0-9.]*.tgz@query-'"$HELM_CHART_VERSION"'.tgz@g'
-sed -i 'publish-to-helm-charts.yml' -e 's@docs/query/query-[0-9.]*.tgz@docs/query/query-'"$HELM_CHART_VERSION"'.tgz@g'
