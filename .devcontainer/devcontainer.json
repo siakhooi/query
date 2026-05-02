@@ -1,6 +1,6 @@
 {
   "name": "JDK25 Development Dev Container",
-  "image": "siakhooi/devcontainer:jdk25",
+  "image": "siakhooi/devcontainer:jdk25_2604",
   "remoteUser": "maui",
   "containerUser": "maui",
   "updateRemoteUserUID": true,
@@ -19,6 +19,7 @@
       ]
     }
   },
+  "postStartCommand": "sudo chmod 666 /var/run/docker.sock || true",
   "remoteEnv": {
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   }
