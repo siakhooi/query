@@ -7,3 +7,4 @@ git_commit_message: "query: Auto deploy"
 files:
   - source: query-*.tgz
     target: docs/query/
+    items: 1
