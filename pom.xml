@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>io.github.siakhooi</groupId>
 	<artifactId>query</artifactId>
-	<version>0.21.0</version>
+	<version>1.0.0</version>
 	<name>Query</name>
 	<description>Query</description>
 	<properties>
