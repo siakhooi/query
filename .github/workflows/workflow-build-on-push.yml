@@ -2,9 +2,16 @@ name: Build and Test on Push
 on:
   push:
     branches:
-      - "*"
+      - "**"
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - "**"
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      QLTY_COVERAGE_TOKEN:
+        required: true
 
 jobs:
   build-with-maven:
