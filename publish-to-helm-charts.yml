@@ -2,7 +2,7 @@ repo: siakhooi/helm-charts
 branch: main
 git_commit_user: query
 git_commit_email: query@siakhooi.github.io
-git_commit_message: "query: Auto deploy"
+git_commit_message: "{repo_name}: {ref_name} | {commit_short}"
 
 files:
   - source: query-*.tgz
