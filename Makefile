@@ -69,6 +69,6 @@ k-pf:
 	shed-kubectl port-forward service/hello1-query 8080:80
 
 helm-unit-test-install:
-	helm plugin install https://github.com/helm-unittest/helm-unittest.git
+	helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
 k3d-load-image:
 	k3d-image-import siakhooi/query:0.5.0
