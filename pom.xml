@@ -23,7 +23,7 @@
 		<mariadb-jdbc.version>4.0.0</mariadb-jdbc.version>
 		<postgresql-jdbc.version>42.7.14</postgresql-jdbc.version>
 		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
-		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
 	    <sonar.organization>siakhooi</sonar.organization>
 	</properties>
 	<dependencies>
